@@ -11,7 +11,7 @@ To create a production-ready build of the Fillin extension for submission to the
    ```bash
    pnpm run build
    ```
-   *This command runs `vite build && vite build -c vite.content.config.ts`. It compiles the popup UI, background service worker, and the content script (in IIFE format) into a clean, unminified-but-optimized `dist` folder.*
+   This compiles the popup UI, background service worker, and content script (in IIFE format) into `dist/`, then packages its contents into `build/fillin-extension.zip`. The archive stays outside `dist/` so it cannot include itself on subsequent packaging runs. Building the extension does not modify the landing website.
 
 3. **Verify the `dist/` directory:**
    Ensure your `dist/` directory contains:
@@ -21,17 +21,21 @@ To create a production-ready build of the Fillin extension for submission to the
    - `content.js`
    - `src/popup/index.html` (and associated assets)
 
-4. **Create the distribution archive:**
-   Compress the **contents** of the `dist/` directory into a `.zip` file. 
-   *(Note: Do not zip the `dist` folder itself, but rather the files inside it, so `manifest.json` is at the root of the `.zip` archive).*
-   
-   On Windows (using PowerShell):
-   ```powershell
-   Compress-Archive -Path dist\* -DestinationPath fillin-production-build.zip
-   ```
+4. **Verify the distribution archive:**
+   The build creates `build/fillin-extension.zip` automatically, with `manifest.json` at its root. To repackage an existing `dist/` without rebuilding, run `pnpm run package` from the extension directory.
 
 5. **Upload to Chrome Web Store:**
-   Upload `fillin-production-build.zip` to the Chrome Developer Dashboard.
+   Upload `build/fillin-extension.zip` to the Chrome Developer Dashboard.
+
+### Updating the website download
+
+From the repository root, run:
+
+```bash
+pnpm release:extension
+```
+
+This separate release step builds the extension and copies its archive into the landing frontend's `public/fillin-extension.zip`. Run it before building or deploying the landing frontend. Ordinary extension and monorepo builds leave the website download unchanged.
 
 ### Security Notes
 - No development URLs or secrets are bundled.

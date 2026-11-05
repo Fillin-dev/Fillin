@@ -160,6 +160,16 @@ pnpm --filter @fillin/extension run build
 ```
 
 This compiles the extension assets into `apps/extension/dist`.
+It also creates `apps/extension/build/fillin-extension.zip` without changing the landing website.
+
+To update the website's extension download, run this separate release command from the repository root:
+
+```bash
+pnpm release:extension
+```
+
+This rebuilds the extension and copies its ZIP to `apps/landing/frontend/public/fillin-extension.zip`.
+Run it before building or deploying the landing frontend when publishing a new extension version.
 
 ---
 
