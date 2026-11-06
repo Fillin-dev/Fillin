@@ -6,6 +6,7 @@ export function useSnippets(service: SnippetService) {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadSnippets = useCallback(async () => {
     try {
@@ -13,8 +14,11 @@ export function useSnippets(service: SnippetService) {
       setError(null);
       const data = await service.getSnippets();
       setSnippets(data);
+      setLoadError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load snippets');
+      const message = err instanceof Error ? err.message : 'Failed to load snippets';
+      setError(message);
+      setLoadError(message);
     } finally {
       setLoading(false);
     }
@@ -95,6 +99,7 @@ export function useSnippets(service: SnippetService) {
     snippets,
     loading,
     error,
+    loadError,
     createSnippet,
     updateSnippet,
     deleteSnippet,

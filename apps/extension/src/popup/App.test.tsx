@@ -1,8 +1,9 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { App } from './App';
 import { InMemoryRepository } from '../storage/InMemoryRepository';
+import { SNIPPET_READ_ERROR } from '../storage/validateSnippetLibrary';
 
 // Mock the services module
 vi.mock('../services', async () => {
@@ -17,6 +18,7 @@ vi.mock('../services', async () => {
 import { snippetService } from '../services';
 
 describe('Snippet Management UI', () => {
+  afterEach(() => { vi.restoreAllMocks(); });
   beforeEach(async () => {
     // Reset the in-memory repository state
     const repo = snippetService['repository'] as unknown as InMemoryRepository;
@@ -28,6 +30,27 @@ describe('Snippet Management UI', () => {
     await snippetService.createSnippet('/email', 'test@example.com');
     await snippetService.createSnippet('/github', 'https://github.com/user');
   };
+
+  it('shows a read error instead of an empty library and retries without saving', async () => {
+    await setupSnippets();
+    const repository = snippetService['repository'] as InMemoryRepository;
+    const before = await repository.getAll();
+    const save = vi.spyOn(repository, 'save');
+    vi.spyOn(snippetService, 'getSnippets').mockRejectedValueOnce(new Error(SNIPPET_READ_ERROR));
+    render(<App />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(SNIPPET_READ_ERROR);
+    expect(screen.queryByText('No snippets yet')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create Snippet' })).not.toBeInTheDocument();
+    expect(save).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('/email')).toBeInTheDocument();
+    expect(screen.getByText('/github')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(await repository.getAll()).toEqual(before);
+    expect(save).not.toHaveBeenCalled();
+  });
 
   it('renders snippets and empty state', async () => {
     render(<App />);

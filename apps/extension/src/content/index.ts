@@ -3,6 +3,7 @@ import { AdapterFactory } from './adapters/AdapterFactory';
 import { GoogleDocsAdapter } from './adapters/GoogleDocsAdapter';
 import { statsService } from '../services/StatsService';
 import { commandPalette } from './CommandPalette';
+import { validateSnippetLibrary } from '../storage/validateSnippetLibrary';
 
 let snippetsCache: Record<string, { content: string; isHtml: boolean }> = {};
 let triggersCache: string[] = [];
@@ -41,6 +42,16 @@ export function updateCache(
   }
 
   commandPalette.updateSnippets(fullSnippetsCache);
+}
+
+export function updateStoredSnippetCache(value: unknown) {
+  try {
+    updateCache(validateSnippetLibrary(value === undefined ? [] : value));
+  } catch {
+    // Disable expansion of unreadable data without changing persistent storage.
+    // The popup provides the error message and retry action.
+    updateCache([]);
+  }
 }
 
 export function getDeepActiveElement(root: Document | ShadowRoot = document): Element | null {
@@ -156,15 +167,15 @@ export function initGoogleDocsObserver() {
 if (typeof document !== 'undefined') {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.local.get(['fillin_snippets', 'fillin_blacklist'], (result) => {
-      const snippets = result['fillin_snippets'] || [];
-      updateCache(snippets);
+      if (chrome.runtime?.lastError) return;
+      updateStoredSnippetCache(result['fillin_snippets']);
       updateBlacklistCache(result['fillin_blacklist'] || []);
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') {
         if (changes['fillin_snippets']) {
-          updateCache(changes['fillin_snippets'].newValue || []);
+          updateStoredSnippetCache(changes['fillin_snippets'].newValue);
         }
         if (changes['fillin_blacklist']) {
           updateBlacklistCache(changes['fillin_blacklist'].newValue || []);
@@ -174,11 +185,11 @@ if (typeof document !== 'undefined') {
   } else {
     try {
       const data = localStorage.getItem('fillin_snippets');
-      if (data) updateCache(JSON.parse(data));
+      updateStoredSnippetCache(data === null ? undefined : JSON.parse(data));
       const bData = localStorage.getItem('fillin_blacklist');
       if (bData) updateBlacklistCache(JSON.parse(bData));
-    } catch (e) {
-      console.error(e);
+    } catch {
+      updateCache([]);
     }
   }
 

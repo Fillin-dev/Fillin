@@ -15,6 +15,8 @@ export function App() {
     snippets,
     loading,
     error,
+    loadError,
+    reload,
     createSnippet,
     updateSnippet,
     deleteSnippet,
@@ -92,6 +94,20 @@ export function App() {
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-4 p-6 bg-white text-center">
+        <div role="alert" className="space-y-2">
+          <h1 className="font-semibold text-gray-900">Unable to load snippets</h1>
+          <p className="text-sm text-gray-600">{loadError}</p>
+        </div>
+        <button onClick={() => void reload()} className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-gray-200">
+          Try again
+        </button>
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { handleKeyDown, updateCache, getDeepActiveElement, getTargetElement } from './index';
+import { handleKeyDown, updateCache, updateStoredSnippetCache, getDeepActiveElement, getTargetElement } from './index';
 
 describe('Content Script Replacer', () => {
   let input: HTMLInputElement;
@@ -23,6 +23,21 @@ describe('Content Script Replacer', () => {
     handleKeyDown(event);
     return event;
   };
+
+  it('disables expansion for invalid stored snippets and recovers with valid data', () => {
+    const saved = { id: 'saved', trigger: '/email', content: 'saved@example.com', createdAt: 1, updatedAt: 1 };
+    for (const invalid of [null, false, {}, [saved, { content: 'broken' }]]) {
+      expect(() => updateStoredSnippetCache(invalid)).not.toThrow();
+      input.value = '/email';
+      input.selectionStart = input.selectionEnd = 6;
+      expect(triggerExpansion().defaultPrevented).toBe(false);
+      expect(input.value).toBe('/email');
+    }
+
+    updateStoredSnippetCache([saved]);
+    expect(triggerExpansion().defaultPrevented).toBe(true);
+    expect(input.value).toBe('saved@example.com');
+  });
 
   it('intercepts Ctrl+Space and replaces trigger at the beginning', () => {
     input.value = '/email';
