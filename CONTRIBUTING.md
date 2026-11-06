@@ -9,8 +9,7 @@ Thank you for contributing to Fillin! Please review the rules in `AGENTS.md` bef
    pnpm install
    ```
 2. **Environment Variables:**
-   Copy `.env.example` to `.env` in `apps/landing/backend` and `apps/landing/frontend`. 
-   By default, the backend runs on port 3000, and the frontend connects to `VITE_API_URL=http://localhost:3000`.
+   The frontend needs no backend configuration. The optional backend accepts `PORT` (default `3000`), `NODE_ENV`, and `CORS_ORIGIN` through environment variables or a local `.env` file. See `apps/landing/backend/README.md` for details.
 
 3. **Run the Development Servers:**
    ```bash

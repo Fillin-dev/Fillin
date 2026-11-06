@@ -9,7 +9,7 @@ It replaces tedious typing with instant shortcuts. Instead of typing your long e
 2. **Text Expansion Engine**: Detects the trigger word directly adjacent to the cursor.
 3. **Seamless Replacement**: Removes the trigger and inserts the full text snippet into the DOM, leaving your cursor perfectly positioned at the end of the newly inserted text.
 4. **Universal Integration**: Functions perfectly inside input boxes, text areas, and complex WYSIWYG editors (like Notion and Gmail).
-5. **Waitlist Integration**: A fully functioning landing page and waitlist backend built for early access signups.
+5. **Direct Download**: A landing page with an extension download and installation guide.
 
 ## Target Audience
 Developers, support agents, founders, and anyone who finds themselves typing the same strings of text over and over again on a daily basis.

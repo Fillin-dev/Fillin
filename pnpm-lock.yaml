@@ -260,9 +260,6 @@ importers:
       '@fastify/cors':
         specifier: ^8.5.0
         version: 8.5.0
-      '@fillin/shared':
-        specifier: workspace:*
-        version: link:../../../packages/shared
       dotenv:
         specifier: ^18.0.5
         version: 18.0.5

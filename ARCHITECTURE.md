@@ -13,7 +13,13 @@ The `packages/shared` workspace is the heart of our business logic. To ensure ab
 - **No Server Code**: It does not contain Fastify instances, routing, or secrets.
 
 ## Independent Backend
-The `landing/backend` is entirely decoupled from the extension. It solely exists to power the waitlist form on the landing page. The extension does not perform network calls to this backend, ensuring that an API outage will never degrade the user's text expansion experience.
+The `landing/backend` is an optional Fastify service exposing only `GET /health`. Neither the extension nor the landing frontend requires it. It has no workspace runtime dependencies, uses a self-contained TypeScript configuration, and compiles to `dist/` for deployment with Node.js and production dependencies. See `apps/landing/backend/README.md` for deployment instructions.
+
+## Shared Package Builds
+`@fillin/shared` exports compiled ES modules and type declarations from `packages/shared/dist`. Turbo builds this package before dependent builds, tests, typechecks, and development servers. Production output excludes tests and contains no Chrome APIs, DOM code, React components, or server code.
+
+## Snippet Writes
+All snippet mutations acquire the same Web Lock before reading storage and release it after saving. This coordinates concurrent operations across extension pages on the same origin. Environments without Web Locks use an in-process queue shared by service instances. Imports and starter packs use the same lock as individual edits. Storage errors propagate to the caller and do not block later operations.
 
 ## Known Limitations
 - `<input type="password">`: Text expansion is deliberately disabled in password fields for security.

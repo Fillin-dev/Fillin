@@ -1,4 +1,4 @@
-import { DetectionResult } from './detector';
+import { DetectionResult } from './detector.js';
 
 export interface ReplacementResult {
   text: string;

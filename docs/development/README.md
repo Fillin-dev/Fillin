@@ -4,7 +4,7 @@ This directory contains resources for building and testing Fillin locally.
 
 ## Chrome Extension Loading
 To test the extension locally:
-1. Build it first: `pnpm --filter @fillin/extension run build`.
+1. Build it and its shared dependency from the repository root: `pnpm exec turbo run build --filter=@fillin/extension`.
 2. Open Chrome -> `chrome://extensions/`.
 3. Enable "Developer mode".
 4. Click "Load unpacked" and select `apps/extension/dist`.
@@ -16,11 +16,12 @@ The content script is explicitly bundled as an IIFE via `vite.content.config.ts`
 
 ## Landing Page Development
 The landing page (`apps/landing/frontend`) is a standard Vite + React + TailwindCSS application.
-- Run `pnpm --filter @fillin/landing-frontend run dev`.
-- Ensure you have a local `.env` with `VITE_API_URL` pointing to the backend (e.g. `http://localhost:3000`).
+- Run `pnpm exec turbo run dev --filter=@fillin/landing-frontend` from the repository root to build the shared package before starting Vite.
+- The frontend does not require a backend or API URL.
 
 ## Backend Development
-The backend (`apps/landing/backend`) is a Node.js + Fastify API.
-- Run `pnpm --filter @fillin/landing-backend run dev` (this starts the server with hot-reload).
+The optional backend (`apps/landing/backend`) is a standalone Node.js + Fastify health API.
+- Run `pnpm --filter @fillin/landing-backend run dev`.
 - Provide a `.env` with `CORS_ORIGIN=http://localhost:5173` to accept requests from your local frontend.
 - Provide `PORT=3000`.
+- See `apps/landing/backend/README.md` for independent production builds and deployment.

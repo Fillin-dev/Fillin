@@ -59,7 +59,7 @@ Fillin/
 │   ├── extension/          # Chrome Extension (React 18, Vite, Manifest V3, TailwindCSS)
 │   └── landing/
 │       ├── frontend/       # Marketing Landing Page (React 18, Vite, TailwindCSS)
-│       └── backend/        # Independent Waitlist REST API (Node.js, Fastify, Zod)
+│       └── backend/        # Optional, independently deployable health API (Node.js, Fastify)
 ├── packages/
 │   ├── shared/             # Pure, framework-agnostic core logic & TypeScript models
 │   └── config/             # Shared TypeScript and ESLint configurations
@@ -88,7 +88,7 @@ flowchart TD
 
     subgraph LandingApp ["Landing Page (Independent)"]
         LandingFrontend["Landing Frontend (React)"]
-        LandingBackend["Waitlist API (Fastify)"]
+        LandingBackend["Optional Health API (Fastify)"]
     end
 
     ContentScript --> AdapterFactory
@@ -101,7 +101,6 @@ flowchart TD
     PopupUI --> ChromeStorage
     ContentScript --> ChromeStorage
 
-    LandingFrontend -->|Waitlist Form| LandingBackend
 ```
 
 ---
@@ -156,10 +155,11 @@ pnpm install
 To create a production build of the Chrome extension:
 
 ```bash
-pnpm --filter @fillin/extension run build
+pnpm exec turbo run build --filter=@fillin/extension
 ```
 
 This compiles the extension assets into `apps/extension/dist`.
+The build first compiles the shared package to JavaScript and TypeScript declarations in `packages/shared/dist`.
 It also creates `apps/extension/build/fillin-extension.zip` without changing the landing website.
 
 To update the website's extension download, run this separate release command from the repository root:
@@ -192,9 +192,9 @@ You can run individual applications or the full monorepo in development mode:
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Full Monorepo** | `pnpm dev` | Runs backend, landing page, and extension simultaneously |
-| **Extension Popup UI** | `pnpm --filter @fillin/extension dev` | Starts Vite dev server for popup UI development |
-| **Landing Frontend** | `pnpm --filter @fillin/landing-frontend dev` | Starts landing page dev server (`http://localhost:5173`) |
-| **Landing Backend** | `pnpm --filter @fillin/landing-backend dev` | Starts Fastify waitlist API (`http://localhost:3000`) |
+| **Extension Popup UI** | `pnpm exec turbo run dev --filter=@fillin/extension` | Builds shared code, then starts Vite for popup UI development |
+| **Landing Frontend** | `pnpm exec turbo run dev --filter=@fillin/landing-frontend` | Builds shared code, then starts the landing page (`http://localhost:5173`) |
+| **Landing Backend (optional)** | `pnpm --filter @fillin/landing-backend dev` | Starts the standalone health API (`http://localhost:3000/health`) |
 
 ---
 
@@ -220,7 +220,7 @@ pnpm format
 Fillin is built on a strict **privacy-first design**:
 
 - **Zero Remote Analytics**: Keystroke detection and expansion occur entirely inside your browser tab's content script sandbox.
-- **Minimal Chrome Permissions**: Requesting strictly `"storage"` permission for snippet saving. No `"tabs"`, `"cookies"`, or `"webRequest"` permissions needed.
+- **Chrome Permissions**: `"storage"` saves snippets, settings, and statistics locally. `"clipboardWrite"` supports the Google Docs clipboard fallback. The content script runs on matching websites (`<all_urls>`, including frames) to expand text. No `"tabs"`, `"cookies"`, or `"webRequest"` permissions are requested.
 - **Decoupled Architecture**: The extension codebase makes zero HTTP/REST calls to any backend server.
 
 ---

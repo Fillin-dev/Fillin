@@ -1,4 +1,4 @@
 export const PRODUCT_NAME = "Fillin";
-export * from './models/snippet';
-export * from './engine/detector';
-export * from './engine/replacer';
+export * from './models/snippet.js';
+export * from './engine/detector.js';
+export * from './engine/replacer.js';

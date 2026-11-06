@@ -2,21 +2,18 @@
 
 To create a production-ready build of the Fillin extension for submission to the Chrome Web Store, follow these exact steps:
 
-1. **Navigate to the extension directory:**
-   ```bash
-   cd apps/extension
-   ```
+1. **Open a terminal at the repository root.**
 
 2. **Run the production build:**
    ```bash
-   pnpm run build
+   pnpm exec turbo run build --filter=@fillin/extension
    ```
-   This compiles the popup UI, background service worker, and content script (in IIFE format) into `dist/`, then packages its contents into `build/fillin-extension.zip`. The archive stays outside `dist/` so it cannot include itself on subsequent packaging runs. Building the extension does not modify the landing website.
+   Run this command from the repository root. It builds the shared package first, then compiles the popup UI, background service worker, and content script (in IIFE format) into the extension's `dist/`, and packages its contents into `build/fillin-extension.zip`. The archive stays outside `dist/` so it cannot include itself on subsequent packaging runs. Building the extension does not modify the landing website.
 
 3. **Verify the `dist/` directory:**
    Ensure your `dist/` directory contains:
    - `manifest.json`
-   - `icon.jpg`
+   - `icon16.png`, `icon48.png`, `icon128.png`
    - `background.js`
    - `content.js`
    - `src/popup/index.html` (and associated assets)
@@ -40,4 +37,4 @@ This separate release step builds the extension and copies its archive into the 
 ### Security Notes
 - No development URLs or secrets are bundled.
 - We deliberately do not output source maps (`.map` files) to keep the extension footprint small and secure.
-- The extension only requests the `storage` permission and `<all_urls>` host permissions, which is the absolute minimum required for a global text expander.
+- The extension requests `storage` for local snippets, settings, and statistics, plus `clipboardWrite` for the Google Docs clipboard fallback. Its content script matches `<all_urls>` (including frames) so text expansion can work on websites. It does not request clipboard read access.
