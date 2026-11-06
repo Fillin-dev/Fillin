@@ -153,7 +153,7 @@ export class GoogleDocsAdapter implements InputAdapter {
     return this.buffer.length;
   }
 
-  private showDocsToast() {
+  private showDocsToast(result: 'copied' | 'failed') {
     try {
       const targetDoc = window.top ? window.top.document : document;
       const existing = targetDoc.getElementById('fillin-docs-toast');
@@ -161,6 +161,7 @@ export class GoogleDocsAdapter implements InputAdapter {
 
       const toast = targetDoc.createElement('div');
       toast.id = 'fillin-docs-toast';
+      toast.setAttribute('role', 'status');
       toast.style.cssText = `
         position: fixed;
         bottom: 24px;
@@ -181,10 +182,10 @@ export class GoogleDocsAdapter implements InputAdapter {
       const isMac = typeof navigator !== 'undefined' && navigator.platform?.toUpperCase().includes('MAC');
       const pasteKey = isMac ? '⌘V' : 'Ctrl+V';
 
-      toast.innerHTML = `
+      toast.innerHTML = result === 'copied' ? `
         <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#4f46e5;border-radius:6px;font-size:12px;">⚡</span>
         <span><strong>Snippet Copied!</strong> Press <kbd style="background:#374151;padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace;">${pasteKey}</kbd> to paste</span>
-      `;
+      ` : '<span>Could not insert or copy the snippet. Try again or copy it from the Fillin popup.</span>';
 
       targetDoc.body.appendChild(toast);
 
@@ -196,6 +197,19 @@ export class GoogleDocsAdapter implements InputAdapter {
       }, 3500);
     } catch {
       // ignore
+    }
+  }
+
+  private async copySnippetToClipboard(text: string): Promise<void> {
+    try {
+      if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+        this.showDocsToast('failed');
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      this.showDocsToast('copied');
+    } catch {
+      this.showDocsToast('failed');
     }
   }
 
@@ -236,14 +250,9 @@ export class GoogleDocsAdapter implements InputAdapter {
       }
     }
 
-    // 3. Fallback: Always copy to clipboard and display quick toast for 100% reliable paste
-    if (cleanText && typeof navigator !== 'undefined' && navigator.clipboard) {
-      try {
-        navigator.clipboard.writeText(cleanText);
-        this.showDocsToast();
-      } catch {
-        // ignore
-      }
+    // 3. Copy only if direct insertion failed, and confirm the copy before prompting to paste.
+    if (cleanText && !insertSuccess) {
+      void this.copySnippetToClipboard(cleanText);
     }
 
     // 4. Reset the buffer

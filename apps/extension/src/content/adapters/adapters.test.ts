@@ -16,10 +16,20 @@ describe('Input Adapters', () => {
 
   describe('GoogleDocsAdapter', () => {
     let adapter: GoogleDocsAdapter;
+    let writeText: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+      vi.useFakeTimers();
+      writeText = vi.fn().mockResolvedValue(undefined);
+      vi.stubGlobal('navigator', { platform: 'Win32', clipboard: { writeText } });
       adapter = GoogleDocsAdapter.getInstance();
       adapter.resetBuffer();
+    });
+
+    afterEach(() => {
+      vi.clearAllTimers();
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
     });
 
     it('records keys and manages rolling buffer', () => {
@@ -79,6 +89,67 @@ describe('Input Adapters', () => {
       expect(deleteCommands.length).toBe(6);
       expect(insertedText).toBe('test@example.com');
       expect(adapter.getText()).toBe('');
+      expect(writeText).not.toHaveBeenCalled();
+      expect(document.getElementById('fillin-docs-toast')).toBeNull();
+    });
+
+    it('waits for clipboard success before prompting to paste', async () => {
+      document.execCommand = vi.fn().mockReturnValue(false);
+      let finishCopy!: () => void;
+      writeText.mockReturnValue(new Promise<void>((resolve) => { finishCopy = resolve; }));
+      adapter.recordKey('/');
+      adapter.replaceText(0, 1, 'fallback text');
+
+      expect(writeText).toHaveBeenCalledWith('fallback text');
+      expect(document.getElementById('fillin-docs-toast')).toBeNull();
+      expect(adapter.getText()).toBe('');
+      // Finishing the copy must not clear keys typed after expansion.
+      adapter.recordKey('x');
+      finishCopy();
+      await vi.advanceTimersByTimeAsync(0);
+
+      const toast = document.getElementById('fillin-docs-toast');
+      expect(toast?.textContent).toContain('Snippet Copied!');
+      expect(toast?.textContent).toContain('Ctrl+V');
+      expect(adapter.getText()).toBe('x');
+    });
+
+    it('falls back when direct insertion throws', async () => {
+      document.execCommand = vi.fn((command: string) => {
+        if (command === 'insertText') throw new Error('Unsupported command');
+        return true;
+      });
+      adapter.replaceText(0, 0, 'fallback text');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(writeText).toHaveBeenCalledWith('fallback text');
+      expect(document.getElementById('fillin-docs-toast')?.textContent).toContain('Snippet Copied!');
+    });
+
+    it.each(['rejects', 'throws', 'unavailable'])('reports failure when clipboard %s', async (failure) => {
+      document.execCommand = vi.fn().mockReturnValue(false);
+      if (failure === 'rejects') {
+        writeText.mockRejectedValue(new Error('Permission denied'));
+      } else if (failure === 'throws') {
+        writeText.mockImplementation(() => { throw new Error('Clipboard blocked'); });
+      } else {
+        vi.stubGlobal('navigator', { platform: 'Win32' });
+      }
+
+      adapter.replaceText(0, 0, 'fallback text');
+      await vi.advanceTimersByTimeAsync(0);
+
+      const message = document.getElementById('fillin-docs-toast')?.textContent;
+      expect(message).toContain('Could not insert or copy');
+      expect(message).not.toContain('Snippet Copied!');
+      expect(message).not.toContain('to paste');
+    });
+
+    it('does not copy or prompt for empty content', () => {
+      document.execCommand = vi.fn().mockReturnValue(false);
+      adapter.replaceText(0, 0, '');
+      expect(writeText).not.toHaveBeenCalled();
+      expect(document.getElementById('fillin-docs-toast')).toBeNull();
     });
   });
 
