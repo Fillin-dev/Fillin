@@ -2,6 +2,19 @@
 
 This directory contains resources for building and testing Fillin locally.
 
+## Dependency Setup
+Use Node 22 (22.12.0 or later) and pnpm 12.9.1. From the repository root:
+
+```bash
+corepack enable
+pnpm --version
+pnpm install --frozen-lockfile
+```
+
+If `pnpm --version` reports a different version, use `corepack pnpm` for installation and scripts. The workspace checks dependency state before running scripts and reports an error instead of initiating an automatic reinstall. After changing dependencies, install explicitly and commit the lockfile update.
+
+The GitHub CI workflow runs typechecks, tests, and production builds for every pull request and on pushes to `main`.
+
 ## Chrome Extension Loading
 To test the extension locally:
 1. Build it and its shared dependency from the repository root: `pnpm exec turbo run build --filter=@fillin/extension`.

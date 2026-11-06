@@ -5,9 +5,13 @@ Thank you for contributing to Fillin! Please review the rules in `AGENTS.md` bef
 ## Development Setup
 
 1. **Install Dependencies:**
+   Use Node 22 (at least 22.12.0) and the exact pnpm version pinned in `package.json`:
    ```bash
-   pnpm install
+   corepack enable
+   pnpm --version # Must match package.json (12.9.1)
+   pnpm install --frozen-lockfile
    ```
+   If another pnpm executable takes precedence, prefix commands with `corepack` (for example, `corepack pnpm typecheck`). Dependencies are installed explicitly; scripts fail with an error when the installation is out of date instead of reinstalling automatically.
 2. **Environment Variables:**
    The frontend needs no backend configuration. The optional backend accepts `PORT` (default `3000`), `NODE_ENV`, and `CORS_ORIGIN` through environment variables or a local `.env` file. See `apps/landing/backend/README.md` for details.
 
@@ -25,6 +29,8 @@ pnpm exec turbo run lint typecheck test
 - `lint`: Ensures no unused variables or `console.error` leaks.
 - `typecheck`: Runs `tsc --noEmit` across all apps.
 - `test`: Executes the Vitest suites.
+
+GitHub's `CI / Typecheck, test, and build` job runs `pnpm typecheck`, `pnpm test`, and `pnpm build` on every pull request and pushes to `main`. It uses Node 22, the pnpm version from `package.json`, and a frozen lockfile. It does not deploy or update the website download. Repository administrators can make this job a required status check in branch protection.
 
 ## Production Builds
 To verify your changes do not break production bundles:

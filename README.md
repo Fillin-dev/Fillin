@@ -135,8 +135,8 @@ Real-time trigger conflict evaluation as you type:
 
 ### Prerequisites
 
-- **Node.js**: `v18.0.0` or higher (v20+ recommended)
-- **pnpm**: `v9.0.0` or higher (`npm i -g pnpm`)
+- **Node.js**: Node 22 LTS, version `22.12.0` or later (`.node-version` selects Node 22).
+- **pnpm**: Exactly `12.9.1`, pinned in `package.json`. Use Corepack to select the project version.
 
 ---
 
@@ -145,8 +145,12 @@ Real-time trigger conflict evaluation as you type:
 ```bash
 git clone https://github.com/vishalsingh-data/Fillin.git
 cd Fillin
-pnpm install
+corepack enable
+pnpm --version # Must print 12.9.1
+pnpm install --frozen-lockfile
 ```
+
+If an existing `pnpm` command overrides the Corepack shim, use `corepack pnpm` in place of `pnpm` (for example, `corepack pnpm install --frozen-lockfile`). Do not use a different pnpm major with the existing installation. Scripts now report outdated dependencies instead of automatically reinstalling them; run the install command explicitly after dependency changes.
 
 ---
 
@@ -212,6 +216,8 @@ pnpm typecheck
 # Format code with Prettier
 pnpm format
 ```
+
+GitHub Actions runs typechecks, tests, and production builds for every pull request and pushes to `main`. The workflow installs the pinned pnpm version and uses `pnpm install --frozen-lockfile` so dependency changes must include an updated lockfile.
 
 ---
 
