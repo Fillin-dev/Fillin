@@ -45,4 +45,33 @@ describe('StatsService', () => {
     expect(service.formatTimeSaved(12000)).toBe('1 hr');
     expect(service.formatTimeSaved(18000)).toBe('1.5 hrs');
   });
+
+  it('preserves simultaneous expansions from separate preview instances', async () => {
+    const other = new StatsService();
+    await Promise.all(
+      Array.from({ length: 20 }, (_, index) =>
+        (index % 2 ? service : other).recordExpansion(6, 16)
+      )
+    );
+    expect(await service.getStats()).toEqual({
+      keystrokesSaved: 200,
+      expansionCount: 20,
+    });
+  });
+
+  it('leaves unreadable preview statistics untouched and allows retry', async () => {
+    localStorage.setItem(STATS_STORAGE_KEY, 'broken JSON');
+    await expect(service.recordExpansion(6, 16)).rejects.toThrow(
+      'Nothing has been changed'
+    );
+    expect(localStorage.getItem(STATS_STORAGE_KEY)).toBe('broken JSON');
+    localStorage.setItem(
+      STATS_STORAGE_KEY,
+      JSON.stringify({ keystrokesSaved: 100, expansionCount: 10 })
+    );
+    expect(await service.recordExpansion(6, 16)).toEqual({
+      keystrokesSaved: 110,
+      expansionCount: 11,
+    });
+  });
 });

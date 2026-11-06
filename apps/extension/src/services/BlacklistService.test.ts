@@ -10,10 +10,16 @@ describe('BlacklistService', () => {
   });
 
   it('normalizes domains accurately', () => {
-    expect(service.normalizeDomain('https://www.chase.com/login')).toBe('chase.com');
-    expect(service.normalizeDomain('http://localhost:3000/app')).toBe('localhost');
+    expect(service.normalizeDomain('https://www.chase.com/login')).toBe(
+      'chase.com'
+    );
+    expect(service.normalizeDomain('http://localhost:3000/app')).toBe(
+      'localhost'
+    );
     expect(service.normalizeDomain('GITHUB.COM/')).toBe('github.com');
-    expect(service.normalizeDomain('sub.domain.org?query=1')).toBe('sub.domain.org');
+    expect(service.normalizeDomain('sub.domain.org?query=1')).toBe(
+      'sub.domain.org'
+    );
   });
 
   it('adds domains and avoids duplicates', async () => {
@@ -51,5 +57,37 @@ describe('BlacklistService', () => {
     const res2 = await service.toggleDomain('chase.com');
     expect(res2.blacklisted).toBe(false);
     expect(res2.list).toEqual([]);
+  });
+
+  it('preserves simultaneous additions from separate preview instances', async () => {
+    const other = new BlacklistService();
+    await Promise.all([
+      service.addDomain('chase.com'),
+      other.addDomain('github.com'),
+    ]);
+    expect(await service.getBlacklist()).toEqual(['chase.com', 'github.com']);
+  });
+
+  it('serializes concurrent preview toggles without nested locks', async () => {
+    const other = new BlacklistService();
+    const results = await Promise.all([
+      service.toggleDomain('chase.com'),
+      other.toggleDomain('chase.com'),
+    ]);
+    expect(results.map((result) => result.blacklisted)).toEqual([true, false]);
+    expect(await service.getBlacklist()).toEqual([]);
+  });
+
+  it('leaves unreadable preview settings untouched and allows retry', async () => {
+    localStorage.setItem('fillin_blacklist', 'broken JSON');
+    await expect(service.addDomain('github.com')).rejects.toThrow(
+      'Nothing has been changed'
+    );
+    expect(localStorage.getItem('fillin_blacklist')).toBe('broken JSON');
+    localStorage.setItem('fillin_blacklist', JSON.stringify(['keep.com']));
+    expect(await service.addDomain('github.com')).toEqual([
+      'keep.com',
+      'github.com',
+    ]);
   });
 });

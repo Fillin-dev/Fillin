@@ -8,6 +8,8 @@ export function useStats() {
     let mounted = true;
     statsService.getStats().then((s) => {
       if (mounted) setStats(s);
+    }).catch(() => {
+      // Keep the last displayed totals if storage is temporarily unavailable.
     });
 
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {

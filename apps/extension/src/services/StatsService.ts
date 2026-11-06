@@ -1,3 +1,6 @@
+import { withStorageWriteLock } from '../storage/withStorageWriteLock';
+import { requestStorageUpdate } from '../storage/storageUpdates';
+
 export interface FillinStats {
   keystrokesSaved: number;
   expansionCount: number;
@@ -6,56 +9,100 @@ export interface FillinStats {
 export const STATS_STORAGE_KEY = 'fillin_stats';
 
 export class StatsService {
+  constructor(private readonly isStorageWriter = false) {}
+
+  private parseStats(value: unknown): FillinStats {
+    if (value === undefined) return { keystrokesSaved: 0, expansionCount: 0 };
+    const stats = value as Partial<FillinStats> | null;
+    if (
+      !stats ||
+      !Number.isSafeInteger(stats.keystrokesSaved) ||
+      stats.keystrokesSaved! < 0 ||
+      !Number.isSafeInteger(stats.expansionCount) ||
+      stats.expansionCount! < 0
+    ) {
+      throw new Error(
+        'Saved statistics could not be read. Nothing has been changed.'
+      );
+    }
+    return stats as FillinStats;
+  }
+
   async getStats(): Promise<FillinStats> {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      return new Promise((resolve) => {
+    if (
+      typeof chrome !== 'undefined' &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      return new Promise((resolve, reject) => {
         chrome.storage.local.get(STATS_STORAGE_KEY, (result) => {
-          const stats = result[STATS_STORAGE_KEY];
-          resolve(stats && typeof stats.keystrokesSaved === 'number' 
-            ? stats 
-            : { keystrokesSaved: 0, expansionCount: 0 });
+          if (chrome.runtime.lastError)
+            return reject(new Error('Could not read saved statistics.'));
+          try {
+            resolve(this.parseStats(result[STATS_STORAGE_KEY]));
+          } catch (error) {
+            reject(error);
+          }
         });
       });
     }
 
     try {
-      if (typeof localStorage !== 'undefined') {
-        const raw = localStorage.getItem(STATS_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed.keystrokesSaved === 'number') {
-            return parsed;
-          }
-        }
-      }
+      const raw = localStorage.getItem(STATS_STORAGE_KEY);
+      return this.parseStats(raw === null ? undefined : JSON.parse(raw));
     } catch {
-      // fallback
+      throw new Error(
+        'Saved statistics could not be read. Nothing has been changed.'
+      );
     }
-
-    return { keystrokesSaved: 0, expansionCount: 0 };
   }
 
-  async recordExpansion(triggerLength: number, expansionLength: number): Promise<FillinStats> {
-    const saved = Math.max(0, expansionLength - triggerLength);
-    const current = await this.getStats();
-    const updated: FillinStats = {
-      keystrokesSaved: current.keystrokesSaved + saved,
-      expansionCount: current.expansionCount + 1,
-    };
-
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      await new Promise<void>((resolve) => {
-        chrome.storage.local.set({ [STATS_STORAGE_KEY]: updated }, () => resolve());
+  async recordExpansion(
+    triggerLength: number,
+    expansionLength: number
+  ): Promise<FillinStats> {
+    if (
+      !this.isStorageWriter &&
+      typeof chrome !== 'undefined' &&
+      chrome.storage?.local
+    ) {
+      return requestStorageUpdate<FillinStats>({
+        type: 'FILLIN_STORAGE_UPDATE',
+        operation: 'recordExpansion',
+        triggerLength,
+        expansionLength,
       });
-    } else if (typeof localStorage !== 'undefined') {
-      try {
-        localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
     }
+    return withStorageWriteLock(STATS_STORAGE_KEY, async () => {
+      const saved = Math.max(0, expansionLength - triggerLength);
+      const current = await this.getStats();
+      const updated: FillinStats = {
+        keystrokesSaved: current.keystrokesSaved + saved,
+        expansionCount: current.expansionCount + 1,
+      };
 
-    return updated;
+      if (
+        typeof chrome !== 'undefined' &&
+        chrome.storage &&
+        chrome.storage.local
+      ) {
+        await new Promise<void>((resolve, reject) => {
+          chrome.storage.local.set({ [STATS_STORAGE_KEY]: updated }, () => {
+            if (chrome.runtime.lastError)
+              return reject(new Error('Could not save statistics.'));
+            resolve();
+          });
+        });
+      } else if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(updated));
+        } catch {
+          throw new Error('Could not save statistics.');
+        }
+      }
+
+      return updated;
+    });
   }
 
   formatTimeSaved(keystrokesSaved: number): string {

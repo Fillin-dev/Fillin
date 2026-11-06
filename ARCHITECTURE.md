@@ -21,6 +21,9 @@ The `landing/backend` is an optional Fastify service exposing only `GET /health`
 ## Snippet Writes
 All snippet mutations acquire the same Web Lock before reading storage and release it after saving. This coordinates concurrent operations across extension pages on the same origin. Environments without Web Locks use an in-process queue shared by service instances. Imports and starter packs use the same lock as individual edits. Storage errors propagate to the caller and do not block later operations.
 
+## Statistics and Blocked Websites
+Chrome storage mutations for statistics and blocked websites are sent to the extension background worker. It serializes each read-modify-write operation by storage key, including the entire blocked-domain toggle. This provides one writer across content scripts on different website origins and extension windows; website-origin Web Locks alone would not coordinate these clients. The message response is sent after storage confirms the write. Failed requests never fall back to uncoordinated direct writes, and failed operations release the queue for later requests. The localStorage preview uses same-origin Web Locks with an in-process queue fallback.
+
 ## Known Limitations
 - `<input type="password">`: Text expansion is deliberately disabled in password fields for security.
 - `<input type="email">`, `type="number"`: Standard HTML5 forbids reading the cursor position (`selectionStart`). Fillin implements a robust, instantaneous workaround by temporarily switching these to `type="text"` internally, but highly customized shadow-DOM implementations of these inputs might still resist expansion on rare edge cases.

@@ -32,6 +32,7 @@ export function App() {
     toggleCurrentDomain,
     addDomain,
     removeDomain,
+    error: blacklistError,
   } = useBlacklist();
 
   const [view, setView] = useState<'list' | 'form'>('list');
@@ -156,9 +157,9 @@ export function App() {
           </div>
 
           {/* Error toast */}
-          {error && (
+          {(error || blacklistError) && (
             <div className="absolute top-3 left-3 right-3 px-3 py-2 rounded-xl text-xs font-medium text-center animate-fade-in bg-red-50 border border-red-200 text-red-600">
-              {error}
+              {error || blacklistError}
             </div>
           )}
 
@@ -174,6 +175,7 @@ export function App() {
           {/* Blacklist / Site pause management modal */}
           {isBlacklistModalOpen && (
             <BlacklistModal
+              error={blacklistError}
               currentDomain={currentDomain}
               isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
               blacklistedDomains={blacklistedDomains}

@@ -5,12 +5,18 @@ export function useBlacklist() {
   const [blacklistedDomains, setBlacklistedDomains] = useState<string[]>([]);
   const [currentDomain, setCurrentDomain] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load blacklisted domains
   const loadBlacklist = useCallback(async () => {
     try {
       const list = await blacklistService.getBlacklist();
       setBlacklistedDomains(list);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Could not load blocked websites.'
+      );
     } finally {
       setLoading(false);
     }
@@ -34,7 +40,9 @@ export function useBlacklist() {
         }
       });
     } else if (typeof window !== 'undefined') {
-      const clean = window.location.hostname.replace(/^www\./, '').toLowerCase();
+      const clean = window.location.hostname
+        .replace(/^www\./, '')
+        .toLowerCase();
       if (clean && clean !== 'localhost') {
         setCurrentDomain(clean);
       }
@@ -46,7 +54,10 @@ export function useBlacklist() {
     loadBlacklist();
 
     if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
-      const listener = (changes: { [key: string]: chrome.storage.StorageChange }, area: string) => {
+      const listener = (
+        changes: { [key: string]: chrome.storage.StorageChange },
+        area: string
+      ) => {
         if (area === 'local' && changes['fillin_blacklist']) {
           setBlacklistedDomains(changes['fillin_blacklist'].newValue || []);
         }
@@ -58,22 +69,51 @@ export function useBlacklist() {
 
   const isCurrentDomainBlacklisted =
     !!currentDomain &&
-    blacklistedDomains.some((d) => currentDomain === d || currentDomain.endsWith('.' + d));
+    blacklistedDomains.some(
+      (d) => currentDomain === d || currentDomain.endsWith('.' + d)
+    );
 
   const toggleCurrentDomain = useCallback(async () => {
     if (!currentDomain) return;
-    const res = await blacklistService.toggleDomain(currentDomain);
-    setBlacklistedDomains(res.list);
+    try {
+      const res = await blacklistService.toggleDomain(currentDomain);
+      setBlacklistedDomains(res.list);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not update blocked websites. Try again.'
+      );
+    }
   }, [currentDomain]);
 
   const addDomain = useCallback(async (domain: string) => {
-    const updated = await blacklistService.addDomain(domain);
-    setBlacklistedDomains(updated);
+    try {
+      const updated = await blacklistService.addDomain(domain);
+      setBlacklistedDomains(updated);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not update blocked websites. Try again.'
+      );
+    }
   }, []);
 
   const removeDomain = useCallback(async (domain: string) => {
-    const updated = await blacklistService.removeDomain(domain);
-    setBlacklistedDomains(updated);
+    try {
+      const updated = await blacklistService.removeDomain(domain);
+      setBlacklistedDomains(updated);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not update blocked websites. Try again.'
+      );
+    }
   }, []);
 
   return {
@@ -84,5 +124,6 @@ export function useBlacklist() {
     addDomain,
     removeDomain,
     loading,
+    error,
   };
 }

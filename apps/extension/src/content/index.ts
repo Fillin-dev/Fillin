@@ -130,7 +130,9 @@ export function handleKeyDown(e: KeyboardEvent) {
         e.preventDefault();
         e.stopPropagation();
         adapter.replaceText(detection.start, detection.end, snippet.content, snippet.isHtml);
-        statsService.recordExpansion(detection.trigger.length, snippet.content.length);
+        void statsService.recordExpansion(detection.trigger.length, snippet.content.length).catch(() => {
+          // Statistics failures must not interrupt text expansion.
+        });
       }
     }
   }

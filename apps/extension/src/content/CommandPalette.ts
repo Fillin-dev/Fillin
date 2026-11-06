@@ -112,7 +112,9 @@ export class CommandPalette {
       }
 
       adapter.replaceText(start, end, snippet.content, snippet.isHtml);
-      statsService.recordExpansion(0, snippet.content.length);
+      void statsService.recordExpansion(0, snippet.content.length).catch(() => {
+        // Statistics failures must not interrupt snippet insertion.
+      });
     }
   }
 

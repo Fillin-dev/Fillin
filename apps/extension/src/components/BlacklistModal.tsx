@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Shield, ShieldAlert, X, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 
 interface Props {
+  error?: string | null;
   isOpen?: boolean;
   onClose: () => void;
   blacklistedDomains: string[];
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function BlacklistModal({
+  error,
   isOpen = true,
   onClose,
   blacklistedDomains,
@@ -37,6 +39,7 @@ export function BlacklistModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden max-h-[90vh]">
+        {error && <p role="alert" className="p-3 text-xs text-red-600 bg-red-50">{error}</p>}
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <div className="flex items-center space-x-2">
