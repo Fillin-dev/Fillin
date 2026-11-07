@@ -1,28 +1,45 @@
 import React from 'react';
+import { HardDrive, ShieldCheck, UserRound } from 'lucide-react';
 
-export const Privacy = () => {
-  return (
-    <section id="privacy" className="py-24 bg-gray-900 text-white px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">Radically Private</h2>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-12">
-          Most text expanders want you to create an account and sync your keystrokes to their cloud. We don&apos;t.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-            <h3 className="text-lg font-bold mb-2">No Servers</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">Fillin has no backend database. Everything is stored using Chrome&apos;s local storage.</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-            <h3 className="text-lg font-bold mb-2">No Tracking</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">We do not track your typing, your websites, or your usage. We don&apos;t even have analytics.</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-            <h3 className="text-lg font-bold mb-2">No Accounts</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">Install it and start typing immediately. There is no onboarding or login wall.</p>
-          </div>
+export const Privacy = () => (
+  <section id="privacy" className="section-band">
+    <div className="section-shell section-space">
+      <div className="section-intro">
+        <div>
+          <p className="eyebrow mb-3">Private by design</p>
+          <h2 className="section-title">
+            Your browser.
+            <br />
+            Your business.
+          </h2>
         </div>
+        <p className="section-description max-w-sm">A small tool that stays close to home.</p>
       </div>
-    </section>
-  );
-};
+      <div className="grid md:grid-cols-3 gap-4">
+        {[
+          {
+            Icon: HardDrive,
+            title: 'Stored locally',
+            text: 'Your snippet library lives on your device.',
+          },
+          {
+            Icon: ShieldCheck,
+            title: 'No tracking',
+            text: 'Your typing and usage stay in your browser.',
+          },
+          {
+            Icon: UserRound,
+            title: 'No account',
+            text: 'Install Fillin and make your first shortcut.',
+          },
+        ].map(({ Icon, title, text }) => (
+          <div key={title} className="surface-card p-6">
+            <Icon size={21} className="accent-text mb-5" aria-hidden="true" />
+            <h3 className="feature-title">{title}</h3>
+            <p className="muted-text text-sm">{text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);

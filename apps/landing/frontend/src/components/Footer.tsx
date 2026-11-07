@@ -38,12 +38,14 @@ export const Footer = () => {
   const spotlightY = spotlightPos?.y ?? 0;
 
   return (
-    <footer className="bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 pt-16 overflow-hidden relative select-none">
+    <footer className="section-band pt-16 overflow-hidden relative select-none">
       {/* Top Tier: Clean Links & Copyright */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 flex flex-col md:flex-row justify-between items-center relative z-10">
+      <div className="section-shell mb-10 flex flex-col md:flex-row justify-between items-center relative z-10">
         <div className="flex items-center space-x-2 mb-4 md:mb-0">
           <img src="/logo.svg" alt="Fillin Logo" className="w-6 h-6 dark:invert" />
-          <span className="font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Fillin</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
+            Fillin
+          </span>
         </div>
         <div className="text-sm text-gray-500 dark:text-gray-400">
           &copy; {new Date().getFullYear()} Fillin. All rights reserved. Zero tracking.
@@ -79,7 +81,7 @@ export const Footer = () => {
           style={{
             opacity: isHovered ? 1 : 0,
             background: isHovered
-              ? `radial-gradient(circle 280px at ${spotlightX}px ${spotlightY}px, rgba(99, 102, 241, 0.18), transparent 70%)`
+              ? `radial-gradient(circle 280px at ${spotlightX}px ${spotlightY}px, rgba(36, 87, 245, 0.18), transparent 70%)`
               : 'transparent',
           }}
         />

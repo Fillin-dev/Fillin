@@ -24,35 +24,41 @@ export const CommandPaletteShowcase = () => {
   }, [step, isPlaying]);
 
   const mockSnippets = [
-    { trigger: '/meeting', tags: ['work', 'calendar'], content: "Let's schedule a quick 15-min call: cal.com/alex" },
-    { trigger: '/followup', tags: ['email'], content: "Hi! Following up on our chat earlier this week." },
+    {
+      trigger: '/meeting',
+      tags: ['work', 'calendar'],
+      content: "Let's schedule a quick 15-min call: cal.com/alex",
+    },
+    {
+      trigger: '/followup',
+      tags: ['email'],
+      content: 'Hi! Following up on our chat earlier this week.',
+    },
     { trigger: '/shrug', tags: ['fun'], content: '¯\\_(ツ)_/¯' },
     { trigger: '/today', tags: ['utility'], content: 'Oct 13, 2026' },
   ];
 
-  const displayedSnippets = step >= 3 
-    ? mockSnippets.filter(s => s.trigger.includes('meet') || s.tags.includes('work'))
-    : mockSnippets;
+  const displayedSnippets =
+    step >= 3
+      ? mockSnippets.filter((s) => s.trigger.includes('meet') || s.tags.includes('work'))
+      : mockSnippets;
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-      <div className="text-center max-w-3xl mx-auto mb-14">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 mb-4">
+    <section className="section-shell section-space overflow-hidden">
+      <div className="text-center max-w-3xl mx-auto mb-8">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 border border-[var(--line)] text-xs font-semibold text-gray-700 dark:text-gray-300 mb-4">
           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>New in Fillin 2.0</span>
+          <span>Find the right words</span>
         </div>
-        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-gray-900 dark:text-gray-100 mb-4">
-          Never memorize a trigger again.
-        </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-          Forgot whether it was <code className="font-mono bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm">/meet</code> or <code className="font-mono bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm">/calendar</code>?{' '}
-          Hit <kbd className="px-2 py-0.5 bg-gray-900 text-white rounded-md text-xs font-mono shadow-sm mx-1">⌘ Shift K</kbd> anywhere on the web for an instant Spotlight search.
+        <h2 className="section-title mb-4">Never memorize a trigger again.</h2>
+        <p className="section-description">
+          Open your library with <kbd className="keycap">⌘ Shift K</kbd>, search a phrase, and press{' '}
+          <kbd className="keycap">Enter</kbd>.
         </p>
       </div>
 
       {/* Interactive Mockup Container */}
-      <div className="max-w-4xl mx-auto relative rounded-3xl bg-gradient-to-b from-gray-100 dark:from-gray-800 to-gray-50 dark:to-gray-950 p-3 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.12)]">
-        
+      <div className="max-w-4xl mx-auto surface-muted relative p-3 sm:p-5">
         {/* Play / Pause toggle */}
         <div className="flex items-center justify-between pb-4 px-2">
           <div className="flex items-center space-x-2">
@@ -64,9 +70,13 @@ export const CommandPaletteShowcase = () => {
 
           <div className="flex items-center space-x-3">
             {/* Shortcut pill indicator */}
-            <div className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all duration-300 flex items-center space-x-1.5 ${
-              step === 1 ? 'bg-amber-400 text-black shadow-lg scale-105 ring-4 ring-amber-200' : 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'
-            }`}>
+            <div
+              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all duration-300 flex items-center space-x-1.5 ${
+                step === 1
+                  ? 'bg-amber-400 text-black shadow-lg scale-105 ring-4 ring-amber-200'
+                  : 'bg-[var(--panel)] border border-[var(--line)] text-gray-600 dark:text-gray-300'
+              }`}
+            >
               <span>⌘</span>
               <span>Shift</span>
               <span>K</span>
@@ -74,8 +84,8 @@ export const CommandPaletteShowcase = () => {
 
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors focus:outline-none"
-              title={isPlaying ? "Pause animation" : "Play animation"}
+              className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 bg-[var(--panel)] border border-[var(--line)] rounded-lg transition-colors focus:outline-none"
+              title={isPlaying ? 'Pause animation' : 'Play animation'}
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             </button>
@@ -83,26 +93,25 @@ export const CommandPaletteShowcase = () => {
         </div>
 
         {/* Browser viewport simulation */}
-        <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 min-h-[360px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-sm">
-          
+        <div className="relative bg-[var(--panel)] rounded-2xl border border-[var(--line)] min-h-[360px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-sm">
           {/* Active mock textarea / document */}
           <div className="relative z-10">
             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center justify-between">
               <span>Compose Email · Notion · Slack · Anywhere</span>
               {step === 5 && (
-                <span className="inline-flex items-center space-x-1 text-emerald-600 font-semibold animate-fade-in">
-                  <Zap className="w-3 h-3 fill-emerald-500 text-emerald-500" />
+                <span className="inline-flex items-center space-x-1 text-[var(--accent-ink)] font-semibold animate-fade-in">
+                  <Zap className="w-3 h-3 fill-blue-500 text-blue-500" />
                   <span>+48 keystrokes saved!</span>
                 </span>
               )}
             </div>
 
-            <div className="w-full p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-950/50 min-h-[100px] text-base text-gray-800 dark:text-gray-200 font-normal leading-relaxed">
+            <div className="w-full p-4 rounded-xl border border-[var(--line)] bg-gray-50/50 dark:bg-gray-950/50 min-h-[100px] text-base text-gray-800 dark:text-gray-200 font-normal leading-relaxed">
               <span>Hey Vishal, are you free tomorrow afternoon? </span>
               {step < 5 ? (
                 <span className="inline-block w-2 h-4 bg-gray-900 dark:bg-gray-100 ml-0.5 animate-pulse align-middle" />
               ) : (
-                <span className="bg-emerald-50 text-emerald-950 font-medium px-1.5 py-0.5 rounded border border-emerald-200/80 animate-fade-in inline-block">
+                <span className="bg-[var(--accent-soft)] text-[var(--accent-ink)] font-medium px-1.5 py-0.5 rounded border border-[var(--line)] animate-fade-in inline-block">
                   Let's schedule a quick 15-min call: cal.com/alex
                 </span>
               )}
@@ -110,12 +119,11 @@ export const CommandPaletteShowcase = () => {
           </div>
 
           {/* Floating Command Palette (Visible in steps 2, 3, 4) */}
-          {(step >= 2 && step <= 4) && (
+          {step >= 2 && step <= 4 && (
             <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[3px] animate-fade-in">
-              <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all animate-slide-up">
-                
+              <div className="w-full max-w-md bg-[var(--panel)] rounded-2xl shadow-2xl border border-[var(--line)] overflow-hidden transform transition-all animate-slide-up">
                 {/* Palette Search Header */}
-                <div className="flex items-center px-4 py-3 border-b border-gray-100 dark:border-gray-800 space-x-2.5">
+                <div className="flex items-center px-4 py-3 border-b border-[var(--line)] space-x-2.5">
                   <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   <div className="flex-1 font-mono text-sm text-gray-900 dark:text-gray-100 flex items-center">
                     {step >= 3 ? (
@@ -133,26 +141,39 @@ export const CommandPaletteShowcase = () => {
                     <div
                       key={s.trigger}
                       className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors ${
-                        (step >= 4 && idx === 0) ? 'bg-gray-900 dark:bg-gray-700 text-white shadow-sm' : 'bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-300'
+                        step >= 4 && idx === 0
+                          ? 'bg-[var(--accent)] text-white shadow-sm'
+                          : 'bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-300'
                       }`}
                     >
                       <div className="flex items-center space-x-2 min-w-0">
-                        <span className={`font-mono font-bold px-1.5 py-0.5 rounded ${
-                          (step >= 4 && idx === 0) ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-                        }`}>
+                        <span
+                          className={`font-mono font-bold px-1.5 py-0.5 rounded ${
+                            step >= 4 && idx === 0
+                              ? 'bg-gray-800 text-white'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                          }`}
+                        >
                           {s.trigger}
                         </span>
-                        {s.tags.map(t => (
-                          <span key={t} className={`text-[10px] px-1.5 py-0.2 rounded border ${
-                            (step >= 4 && idx === 0) ? 'border-gray-700 text-gray-300' : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900'
-                          }`}>
+                        {s.tags.map((t) => (
+                          <span
+                            key={t}
+                            className={`text-[10px] px-1.5 py-0.2 rounded border ${
+                              step >= 4 && idx === 0
+                                ? 'border-gray-700 text-gray-300'
+                                : 'border-[var(--line)] text-gray-500 dark:text-gray-400 bg-[var(--panel)]'
+                            }`}
+                          >
                             #{t}
                           </span>
                         ))}
                       </div>
-                      <span className={`truncate max-w-[160px] text-right ${
-                        (step >= 4 && idx === 0) ? 'text-gray-300' : 'text-gray-400'
-                      }`}>
+                      <span
+                        className={`truncate max-w-[160px] text-right ${
+                          step >= 4 && idx === 0 ? 'text-gray-300' : 'text-gray-400'
+                        }`}
+                      >
                         {s.content}
                       </span>
                     </div>
@@ -160,11 +181,15 @@ export const CommandPaletteShowcase = () => {
                 </div>
 
                 {/* Palette Footer */}
-                <div className="px-4 py-2 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-[11px] text-gray-400">
+                <div className="px-4 py-2 bg-gray-50 dark:bg-gray-950 border-t border-[var(--line)] flex items-center justify-between text-[11px] text-gray-400">
                   <span>Fillin Palette</span>
                   <div className="flex items-center space-x-2">
-                    <span><kbd className="font-mono bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-1 rounded">↑↓</kbd> navigate</span>
-                    <span><kbd className="font-mono bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-1 rounded">↵</kbd> insert</span>
+                    <span>
+                      <kbd className="keycap">↑↓</kbd> navigate
+                    </span>
+                    <span>
+                      <kbd className="keycap">↵</kbd> insert
+                    </span>
                   </div>
                 </div>
               </div>
@@ -172,9 +197,11 @@ export const CommandPaletteShowcase = () => {
           )}
 
           {/* Bottom helper state bar */}
-          <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="pt-4 border-t border-[var(--line)] flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center space-x-2">
-              <span className={`w-2 h-2 rounded-full ${step === 5 ? 'bg-emerald-500 animate-ping' : 'bg-amber-400'}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${step === 5 ? 'bg-blue-500 animate-ping' : 'bg-amber-400'}`}
+              />
               <span className="font-medium">
                 {step === 0 && '1. User typing in document...'}
                 {step === 1 && '2. Pressing shortcut ⌘ + Shift + K...'}
@@ -198,7 +225,6 @@ export const CommandPaletteShowcase = () => {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </section>

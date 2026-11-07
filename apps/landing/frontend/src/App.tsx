@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { SocialProof } from './components/SocialProof';
@@ -13,6 +13,7 @@ import { Footer } from './components/Footer';
 import { InstallPage } from './components/InstallPage';
 
 export const App = () => {
+  const [demoKeystrokes, setDemoKeystrokes] = useState(0);
   const path = window.location.pathname;
 
   if (path === '/install') {
@@ -20,15 +21,15 @@ export const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div id="top" className="site-page min-h-screen">
       <Navbar />
       <main>
         <Hero />
         <SocialProof />
-        <InteractivePlayground />
+        <InteractivePlayground onExpand={(saved) => setDemoKeystrokes((total) => total + saved)} />
         <CommandPaletteShowcase />
         <HowItWorks />
-        <Features />
+        <Features keystrokesSaved={demoKeystrokes} />
         <Privacy />
         <CTA />
         <FAQ />

@@ -3,15 +3,14 @@ import { DownloadButtons } from './DownloadButtons';
 
 export const CTA = () => {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 text-center bg-gray-50 dark:bg-gray-950">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-6">
-          Ready to save time?
-        </h2>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-10">
-          Join thousands of developers typing faster with Fillin.
-        </p>
-        <div className="max-w-2xl mx-auto">
+    <section className="section-shell section-space">
+      <div className="surface-card cta-panel">
+        <div>
+          <p className="eyebrow mb-3">Start with one shortcut</p>
+          <h2 className="section-title">Ready to save time?</h2>
+          <p className="muted-text mt-4">Your most-used words are a good place to start.</p>
+        </div>
+        <div className="min-w-0">
           <DownloadButtons />
         </div>
       </div>

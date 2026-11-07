@@ -1,154 +1,141 @@
 import React, { useState } from 'react';
-import { Zap, Lock, Tag, Keyboard, Download, Check, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Check, Download, Keyboard, Lock, Tag, Zap } from 'lucide-react';
+import { ShortcutPreview } from './ShortcutPreview';
 
-export const Features = () => {
-  const [activeTag, setActiveTag] = useState('#work');
-  const [keystrokes] = useState(14820);
+const examples = {
+  '#work': { trigger: '/meeting', content: "Let's hop on a quick call" },
+  '#email': { trigger: '/followup', content: 'Following up on our previous note' },
+  '#dev': { trigger: '/pr', content: 'LGTM! Merged to main branch' },
+  '#support': { trigger: '/refund', content: 'Your refund has been processed' },
+};
 
-  const tags = ['#work', '#email', '#dev', '#support'];
-
-  const tagSnippets: Record<string, string> = {
-    '#work': '/meeting → Let\'s hop on a quick call',
-    '#email': '/followup → Following up on our previous note',
-    '#dev': '/pr → LGTM! Merged to main branch',
-    '#support': '/refund → Your refund has been processed',
-  };
+export const Features = ({ keystrokesSaved }: { keystrokesSaved: number }) => {
+  const [activeTag, setActiveTag] = useState<keyof typeof examples>('#work');
+  const example = examples[activeTag];
 
   return (
-    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl font-black tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-4">
-          Developer-grade speed. Real superpowers.
-        </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium">
-          Built local-first for uncompromising privacy, with modern tools to keep you in flow.
+    <section id="features" className="section-shell section-space">
+      <div className="section-intro">
+        <div>
+          <p className="eyebrow mb-3">The everyday essentials</p>
+          <h2 className="section-title">
+            Small shortcuts.
+            <br />
+            More room to work.
+          </h2>
+        </div>
+        <p className="section-description max-w-sm">
+          Less repetition, a tidier library, and words that stay yours.
         </p>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(270px,auto)]">
-        
-        {/* Card 1: Blazing Fast + Keystrokes Gamification (Spans 2 columns) */}
-        <div className="group md:col-span-2 bg-gray-50 dark:bg-gray-950 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-colors overflow-hidden relative flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-6">
-            <div className="w-14 h-14 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-              <Zap className="w-7 h-7 text-gray-900 dark:text-gray-100" />
-            </div>
-
-            {/* Live Gamification Widget Preview */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200/90 dark:border-gray-700/90 rounded-2xl p-3 sm:p-4 shadow-sm inline-flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-              </div>
-              <div className="text-left">
-                <div className="text-sm font-bold text-gray-900 dark:text-gray-100 font-mono tracking-tight">
-                  {keystrokes.toLocaleString()} keystrokes saved
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">~1.2 hours of typing saved</div>
-              </div>
-            </div>
+      <div className="feature-grid">
+        <article className="surface-card feature-card feature-wide">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <span className="feature-icon">
+              <Zap size={23} aria-hidden="true" />
+            </span>
+            <span className="highlight-pill">Try the demo above</span>
           </div>
-
+          <div className="demo-metric">
+            <output
+              aria-label="Demo keystrokes saved"
+              aria-live="polite"
+              className="demo-count"
+              key={keystrokesSaved}
+            >
+              {keystrokesSaved.toLocaleString()}
+            </output>
+            <span className="muted-text text-sm">keystrokes saved in this demo</span>
+          </div>
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Instant Expansion & Keystrokes Saved</h3>
-            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-xl">
-              Zero lag. Snippets expand in under 5 milliseconds with native DOM replacement. 
-              Track your cumulative hours and keystrokes saved right in your popup—stored purely on your machine.
+            <h3 className="feature-title">Less typing. You can count on it.</h3>
+            <p className="muted-text">
+              Run an expansion in the playground and watch this number grow. This counter is just
+              for your visit.
             </p>
           </div>
-        </div>
+          <a className="text-link mt-5" href="#playground">
+            Give it a try <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+        </article>
 
-        {/* Card 2: Local First & 1-Click JSON Portability (Spans 1 column, dark theme) */}
-        <div className="group md:col-span-1 bg-gray-900 rounded-3xl p-8 border border-gray-800 hover:bg-black transition-colors overflow-hidden relative flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="w-14 h-14 bg-gray-800 rounded-2xl flex items-center justify-center border border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                <Lock className="w-7 h-7 text-white" />
-              </div>
-              
-              <span className="text-xs font-mono font-semibold bg-gray-800 text-emerald-400 border border-emerald-900/50 px-2.5 py-1 rounded-full flex items-center gap-1">
-                <Check className="w-3 h-3" /> 100% Offline
+        <article className="surface-card feature-card feature-local">
+          <div className="flex items-center justify-between gap-3">
+            <span className="feature-icon">
+              <Lock size={23} aria-hidden="true" />
+            </span>
+            <span className="accent-pill">
+              <Check size={12} aria-hidden="true" /> Local-first
+            </span>
+          </div>
+          <div className="my-7">
+            <h3 className="feature-title">Your words stay with you.</h3>
+            <p className="muted-text">
+              Snippets live in your browser. Export a JSON backup whenever you need it.
+            </p>
+          </div>
+          <div className="backup-preview">
+            <span className="font-mono text-xs break-all">fillin-backup.json</span>
+            <Download size={18} aria-hidden="true" />
+          </div>
+        </article>
+
+        <article className="surface-card feature-card">
+          <span className="feature-icon">
+            <Tag size={23} aria-hidden="true" />
+          </span>
+          <div className="my-6">
+            <h3 className="feature-title">A place for every phrase.</h3>
+            <p className="muted-text">
+              Choose a tag to see its shortcut. Preview the full text below.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Example tags">
+            {(Object.keys(examples) as (keyof typeof examples)[]).map((tag) => (
+              <button
+                key={tag}
+                className="tag-option"
+                aria-pressed={activeTag === tag}
+                onClick={() => setActiveTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+          <p className="sr-only" role="status">
+            {example.trigger + ' → ' + example.content}
+          </p>
+          <ShortcutPreview key={activeTag} {...example} defaultExpanded />
+        </article>
+
+        <article className="surface-card feature-card feature-wide">
+          <span className="feature-icon">
+            <Keyboard size={23} aria-hidden="true" />
+          </span>
+          <div className="my-6">
+            <h3 className="feature-title">One shortcut. Everyday places.</h3>
+            <p className="muted-text">
+              Use saved phrases in forms, email, and rich-text editors. Try a couple of examples.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <ShortcutPreview
+              trigger="/thanks"
+              content="Thanks for your help. I really appreciate it!"
+            />
+            <ShortcutPreview
+              trigger="/intro"
+              content="Hello! Great to meet you. Here's a little about me."
+            />
+          </div>
+          <div className="flex flex-wrap gap-2 mt-5" aria-label="Supported editor examples">
+            {['Gmail', 'Notion', 'Google Docs', 'Text fields'].map((app) => (
+              <span key={app} className="editor-chip">
+                {app}
               </span>
-            </div>
-
-            <h3 className="text-2xl font-bold text-white mb-3">Local-First & JSON Portability</h3>
-            <p className="text-gray-400 leading-relaxed text-sm mb-4">
-              Your snippets never leave your browser. Zero cloud sync, no tracking, and 1-click JSON backup & restore so you always own your data.
-            </p>
+            ))}
           </div>
-
-          {/* Backup Badge */}
-          <div className="bg-gray-800/80 border border-gray-700/80 rounded-xl p-3 flex items-center justify-between text-xs text-gray-300">
-            <span className="font-mono">fillin-backup.json</span>
-            <div className="flex items-center gap-1 text-gray-400 font-medium">
-              <Download className="w-3.5 h-3.5" /> Export / Import
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Smart Organization (#Tags) (Spans 1 column) */}
-        <div className="group md:col-span-1 bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden relative flex flex-col justify-between">
-          <div>
-            <div className="w-14 h-14 bg-gray-50 dark:bg-gray-950 rounded-2xl flex items-center justify-center border border-gray-100 dark:border-gray-800 mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-              <Tag className="w-7 h-7 text-gray-900 dark:text-gray-100" />
-            </div>
-
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Organize with #Tags</h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
-              Tag your snippets and filter your collection in one click. No clunky folder hierarchies.
-            </p>
-          </div>
-
-          {/* Interactive Tag Pills Mini-Widget */}
-          <div className="bg-gray-50 dark:bg-gray-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
-            <div className="flex flex-wrap gap-1.5 mb-2.5">
-              {tags.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setActiveTag(t)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                    activeTag === t
-                      ? 'bg-gray-900 dark:bg-gray-700 text-white shadow-sm'
-                      : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-            <div className="text-[11px] font-mono text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800 truncate">
-              {tagSnippets[activeTag]}
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Works Everywhere (Spans 2 columns) */}
-        <div className="group md:col-span-2 bg-gray-50 dark:bg-gray-950 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-colors overflow-hidden relative flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-6">
-            <div className="w-14 h-14 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-              <Keyboard className="w-7 h-7 text-gray-900 dark:text-gray-100" />
-            </div>
-
-            {/* App support badges */}
-            <div className="flex items-center flex-wrap gap-1.5">
-              {['Notion', 'Gmail', 'Google Docs', 'Slack', 'Textareas'].map((app) => (
-                <span
-                  key={app}
-                  className="px-2.5 py-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 shadow-sm"
-                >
-                  {app}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Universal DOM Compatibility</h3>
-            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-xl">
-              Engineered with specialized adapters for standard inputs, React synthetic event wrappers, and complex contenteditable rich-text editors. Expands cleanly without breaking undo history.
-            </p>
-          </div>
-        </div>
-
+        </article>
       </div>
     </section>
   );

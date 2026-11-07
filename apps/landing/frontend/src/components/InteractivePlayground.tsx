@@ -1,123 +1,114 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, Sparkles, Command } from 'lucide-react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { detectTrigger, replaceTrigger } from '@fillin/shared';
+import { ArrowUpRight, RotateCcw, Sparkles } from 'lucide-react';
 
-export const InteractivePlayground = () => {
-  const [text, setText] = useState('Hey team,\n\nJust wanted to share my new contact info. You can reach me at /em1');
-  const [showTooltip, setShowTooltip] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
+const initialText = 'Hey team,\n\nYou can reach me at /em1';
+const trigger = '/em1';
+const replacement = 'vishal@example.com';
+
+export const InteractivePlayground = ({ onExpand }: { onExpand: (saved: number) => void }) => {
+  const [text, setText] = useState(initialText);
+  const [message, setMessage] = useState('Ready when you are.');
+  const [expanded, setExpanded] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const pendingCursor = useRef<number | null>(null);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.ctrlKey && e.code === 'Space') {
-      e.preventDefault();
-      
-      const cursorPosition = e.currentTarget.selectionStart;
-      const textBeforeCursor = text.substring(0, cursorPosition);
-      const textAfterCursor = text.substring(cursorPosition);
-      
-      const words = textBeforeCursor.split(/\s/);
-      const lastWord = words[words.length - 1];
-
-      if (lastWord === '/em1') {
-        const replacement = 'vishal@example.com';
-        const newTextBeforeCursor = textBeforeCursor.substring(0, textBeforeCursor.length - lastWord.length) + replacement;
-        setText(newTextBeforeCursor + textAfterCursor);
-        setIsExpanded(true);
-        setShowTooltip(false);
-
-        // Flash effect
-        if (textareaRef.current) {
-          textareaRef.current.classList.add('ring-4', 'ring-purple-500/50');
-          setTimeout(() => {
-            if (textareaRef.current) {
-              textareaRef.current.classList.remove('ring-4', 'ring-purple-500/50');
-            }
-          }, 300);
-        }
-      }
+  useLayoutEffect(() => {
+    if (pendingCursor.current !== null && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(pendingCursor.current, pendingCursor.current);
+      pendingCursor.current = null;
     }
+  });
+
+  const expand = (fromButton = false) => {
+    const field = textareaRef.current;
+    if (!field) return;
+    const cursor = fromButton ? text.length : field.selectionStart;
+    const detection = detectTrigger(text, cursor, [trigger]);
+    if (!detection || (!fromButton && field.selectionStart !== field.selectionEnd)) {
+      setMessage('Place the cursor just after /em1, then try again.');
+      return;
+    }
+    const result = replaceTrigger(text, detection, replacement);
+    pendingCursor.current = result.cursorPosition;
+    setText(result.text);
+    setExpanded(true);
+    const saved = Math.max(0, replacement.length - trigger.length);
+    setMessage('Expanded! ' + saved + ' keystrokes saved in this demo.');
+    onExpand(saved);
   };
 
   return (
-    <section className="py-24 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 overflow-hidden relative">
-      {/* Decorative background gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[1000px] pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 dark:opacity-10"></div>
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 dark:opacity-10"></div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-black tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-4">
-            Try it right now.
+    <section id="playground" className="section-band">
+      <div className="section-shell section-space playground-layout">
+        <div>
+          <p className="eyebrow mb-3">Go on. Try it.</p>
+          <h2 className="section-title">
+            A few characters.
+            <br />A complete thought.
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium">
-            No installation required for this demo. Go to the end of the text and press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm font-mono text-gray-900 dark:text-gray-100 mx-1">Ctrl + Space</kbd>.
+          <p className="section-description mt-5">
+            Put your cursor after <code className="inline-code">/em1</code> and press{' '}
+            <kbd className="keycap">Ctrl</kbd> + <kbd className="keycap">Space</kbd>. Or use the
+            button.
+          </p>
+          <p className="muted-text text-sm mt-4">
+            No installation needed. This example stays on this page.
           </p>
         </div>
-
-        <div className="max-w-3xl mx-auto">
-          {/* Editor Window */}
-          <div className="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
-            {/* Editor Header */}
-            <div className="bg-gray-800/50 border-b border-gray-800 px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              </div>
-              <div className="flex items-center text-gray-400 text-sm font-mono space-x-2">
-                <Terminal className="w-4 h-4" />
-                <span>playground.txt</span>
-              </div>
-              <div className="w-16"></div> {/* Spacer for centering */}
-            </div>
-
-            {/* Editor Body */}
-            <div className="relative p-6">
-              {showTooltip && (
-                <div className="absolute top-16 right-10 bg-purple-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-lg animate-bounce flex items-center space-x-2 z-20 pointer-events-none">
-                  <Command className="w-4 h-4" />
-                  <span>Put your cursor after '/em1' and hit Ctrl+Space!</span>
-                  {/* Tooltip caret */}
-                  <div className="absolute -bottom-2 right-8 w-4 h-4 bg-purple-600 transform rotate-45"></div>
-                </div>
-              )}
-
-              {isExpanded && (
-                <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 border border-green-500/30 text-sm font-medium px-3 py-1.5 rounded-full flex items-center space-x-2 z-20 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <Sparkles className="w-4 h-4" />
-                  <span>Expanded instantly!</span>
-                </div>
-              )}
-
-              <textarea
-                ref={textareaRef}
-                value={text}
-                onChange={(e) => {
-                  setText(e.target.value);
-                  if (e.target.value.endsWith('/em1')) {
-                    setShowTooltip(true);
-                  } else {
-                    setShowTooltip(false);
-                  }
-                }}
-                onKeyDown={handleKeyDown}
-                className="w-full h-48 bg-transparent text-gray-300 font-mono text-lg resize-none outline-none focus:ring-0 leading-relaxed transition-all duration-300"
-                spellCheck="false"
-              />
-            </div>
-
-            {/* Editor Footer */}
-            <div className="bg-gray-800/30 border-t border-gray-800 px-4 py-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-mono">
-              <div className="flex space-x-4">
-                <span>UTF-8</span>
-                <span>React</span>
-              </div>
-              <div>
-                Shortcut mapping: <span className="text-purple-400 font-semibold">/em1</span> → <span className="text-gray-300">vishal@example.com</span>
-              </div>
-            </div>
+        <div className="surface-card demo-editor">
+          <div className="demo-editor-header">
+            <span className="flex items-center gap-1.5" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="font-mono text-xs muted-text">your-next-message.txt</span>
+            <Sparkles size={16} className="accent-text" aria-hidden="true" />
+          </div>
+          <label htmlFor="playground-text" className="sr-only">
+            Try shortcut expansion
+          </label>
+          <textarea
+            id="playground-text"
+            ref={textareaRef}
+            value={text}
+            onChange={(event) => {
+              setText(event.target.value);
+              setExpanded(false);
+              setMessage('Ready when you are.');
+            }}
+            onKeyDown={(event) => {
+              if (event.ctrlKey && event.code === 'Space' && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                expand();
+              }
+            }}
+            className="demo-textarea"
+            spellCheck={false}
+          />
+          <div className="demo-editor-actions">
+            <button type="button" className="button-primary" onClick={() => expand(true)}>
+              Expand shortcut <ArrowUpRight size={15} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="button-reset"
+              onClick={() => {
+                pendingCursor.current = text === initialText ? null : initialText.length;
+                setText(initialText);
+                setExpanded(false);
+                setMessage('Ready when you are.');
+                textareaRef.current?.focus();
+                textareaRef.current?.setSelectionRange(initialText.length, initialText.length);
+              }}
+            >
+              <RotateCcw size={14} aria-hidden="true" /> Reset
+            </button>
+          </div>
+          <div className="demo-editor-status" data-expanded={expanded} role="status">
+            {message}
           </div>
         </div>
       </div>

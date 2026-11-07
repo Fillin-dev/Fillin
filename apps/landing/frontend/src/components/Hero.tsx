@@ -1,78 +1,74 @@
 import React from 'react';
-import { PRODUCT_NAME } from '@fillin/shared';
+import { ArrowDown, Puzzle } from 'lucide-react';
 import { DownloadButtons } from './DownloadButtons';
+import { ShortcutPreview } from './ShortcutPreview';
 
-export const Hero = () => {
-  return (
-    <section className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center overflow-hidden">
-      
-      {/* Floating Background Elements */}
-      <div className="hidden lg:block absolute top-20 left-10 animate-[float_6s_ease-in-out_infinite] opacity-80 pointer-events-none" style={{ '--tw-rotate': '-6deg' } as any}>
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-5 -rotate-6 hover:rotate-0 transition-transform duration-300">
-          <div className="text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">/email</div>
-          <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">samprati@example.com</div>
-        </div>
+export const Hero = () => (
+  <section className="hero-scene">
+    <div className="hero-floats" aria-hidden="true">
+      <div className="hero-float hero-float-email">
+        <span className="hero-float-label">/email</span>
+        <span>samprati@example.com</span>
       </div>
-
-      <div className="hidden lg:block absolute top-40 right-10 animate-[float_8s_ease-in-out_infinite_reverse] opacity-80 pointer-events-none" style={{ '--tw-rotate': '3deg' } as any}>
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl p-5 rotate-3 hover:rotate-0 transition-transform duration-300">
-          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">/zoom</div>
-          <div className="text-sm font-semibold text-white">zoom.us/j/123456</div>
-        </div>
+      <div className="hero-float hero-float-zoom">
+        <span className="hero-float-label">/zoom</span>
+        <span>zoom.us/j/123456</span>
       </div>
-
-      <div className="hidden lg:block absolute bottom-20 left-1/4 animate-[float_7s_ease-in-out_infinite] opacity-60 pointer-events-none" style={{ '--tw-rotate': '12deg' } as any}>
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-3 rotate-12 scale-75">
-          <div className="text-xs font-mono font-bold bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-md text-gray-600 dark:text-gray-300">Ctrl + Space</div>
-        </div>
+      <div className="hero-float hero-float-keys">
+        <kbd className="keycap">Ctrl + Space</kbd>
       </div>
-
-      {/* Floating Badge: In-Page Palette */}
-      <div className="hidden lg:block absolute bottom-24 right-20 animate-[float_7.5s_ease-in-out_infinite_reverse] opacity-85 pointer-events-none" style={{ '--tw-rotate': '-4deg' } as any}>
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-3.5 -rotate-3 hover:rotate-0 transition-transform duration-300 flex items-center space-x-2">
-          <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-md shadow-sm">⌘ Shift K</span>
-          <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Spotlight</span>
-        </div>
+      <div className="hero-float hero-float-palette">
+        <kbd className="keycap">⌘ Shift K</kbd>
+        <span>Spotlight</span>
       </div>
-
-      {/* Playful Sticker 1 */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -ml-[280px] -mt-[60px] md:-ml-[380px] md:-mt-[80px] z-10 rotate-[-15deg] hover:rotate-0 hover:scale-110 transition-all duration-300 cursor-pointer">
-        <div className="bg-yellow-300 text-yellow-900 font-bold text-sm px-4 py-2 rounded-full border-2 border-yellow-900 shadow-[3px_3px_0px_0px_rgba(113,63,18,1)]">
-          100% Free! ✌️
+    </div>
+    <div className="section-shell hero-section">
+      <div className="hero-copy">
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <span className="highlight-pill">100% free</span>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-20">
-        <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black tracking-tighter text-gray-900 dark:text-gray-100 mb-8 leading-[0.95]">
-          Fill in your <br className="hidden md:block" /> own blanks.
+        <h1 className="hero-title">
+          Fill in your
+          <br />
+          own blanks.
         </h1>
-        <div className="flex justify-center sm:justify-end max-w-4xl mx-auto px-4 mb-8">
-          <div className="inline-flex items-center gap-1.5 bg-blue-200 text-blue-900 font-bold text-sm px-4 py-2 rounded-full border-2 border-blue-900 shadow-[3px_3px_0px_0px_rgba(30,58,138,1)] rotate-6">
-            Chrome Extension 🧩
-          </div>
-        </div>
-        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
-          Create shortcuts for anything you type repeatedly. {PRODUCT_NAME} expands your custom snippets across the web instantly.
+        <p className="section-description max-w-lg mt-6">
+          Turn the things you type every day into shortcuts.
         </p>
-        
-        <div className="max-w-2xl mx-auto mb-10 transform hover:scale-105 transition-transform duration-300">
+        <div className="mt-8">
           <DownloadButtons />
         </div>
-        
-        <p className="text-xs md:text-sm text-gray-400 font-bold tracking-[0.2em] uppercase">
-          Local-first • Privacy focused • Open Source
-        </p>
+        <a href="#playground" className="hero-demo-link">
+          Try it before you install <ArrowDown size={15} aria-hidden="true" />
+        </a>
       </div>
 
-      {/* Custom Styles for Float Animation */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes float {
-          0% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); }
-          50% { transform: translateY(-15px) rotate(var(--tw-rotate, 0deg)); }
-          100% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); }
-        }
-      `}} />
-    </section>
-  );
-};
+      <div className="hero-board surface-card">
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-5">
+          <span className="eyebrow">A little less typing</span>
+          <span className="accent-pill">
+            <Puzzle size={13} aria-hidden="true" /> Chrome Extension
+          </span>
+        </div>
+        <ShortcutPreview trigger="/email" content="hello@example.com" />
+        <div className="hero-board-second">
+          <ShortcutPreview
+            trigger="/meeting"
+            content="Let's find a time to talk. calendar.example.com"
+          />
+        </div>
+        <div className="hero-board-footer">
+          <span>
+            <kbd className="keycap">Ctrl</kbd>
+            <span className="mx-1.5">+</span>
+            <kbd className="keycap">Space</kbd>
+          </span>
+          <span>Your words, expanded.</span>
+        </div>
+        <div className="hero-board-note">
+          <span className="accent-dot" /> Local-first · No account needed
+        </div>
+      </div>
+    </div>
+  </section>
+);

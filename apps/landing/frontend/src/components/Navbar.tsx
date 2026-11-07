@@ -4,17 +4,34 @@ import { ThemeControl } from './ThemeControl';
 
 export const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="site-navbar fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
+      <div className="section-shell">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Fillin Logo" className="w-8 h-8 dark:invert" />
-            <span className="font-bold text-xl text-gray-900 dark:text-gray-100 tracking-tight">{PRODUCT_NAME}</span>
-          </div>
+          <a href="/#top" aria-label="Fillin home" className="flex items-center space-x-2 rounded-lg">
+            <img src="/logo.svg" alt="" className="w-8 h-8 dark:invert" />
+            <span className="font-bold text-xl text-gray-900 dark:text-gray-100 tracking-tight">
+              {PRODUCT_NAME}
+            </span>
+          </a>
           <div className="hidden lg:flex items-center space-x-8">
-            <a href="#how-it-works" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">How it works</a>
-            <a href="#features" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Features</a>
-            <a href="#privacy" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Privacy</a>
+            <a
+              href="#how-it-works"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              How it works
+            </a>
+            <a
+              href="#features"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#privacy"
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              Privacy
+            </a>
           </div>
           <div className="flex items-center gap-2">
             <ThemeControl />
@@ -122,12 +139,20 @@ const GitHubStarButton = () => {
           color: var(--gh-hover-text, #92400e);
         }
         .dark .gh-star-btn {
-          --gh-border: #374151;
-          --gh-bg: #111827;
-          --gh-text: #f3f4f6;
-          --gh-muted: #9ca3af;
-          --gh-hover: #292211;
-          --gh-hover-text: #fcd34d;
+          --gh-border: var(--line);
+          --gh-bg: var(--panel);
+          --gh-text: var(--ink);
+          --gh-muted: var(--muted);
+          --gh-hover: var(--accent-soft);
+          --gh-hover-text: var(--accent-ink);
+        }
+        .gh-star-btn {
+          --gh-border: var(--line);
+          --gh-bg: var(--panel);
+          --gh-text: var(--ink);
+          --gh-muted: var(--muted);
+          --gh-hover: var(--accent-soft);
+          --gh-hover-text: var(--accent-ink);
         }
         @media (max-width: 639px) {
           .gh-star-btn { padding: 8px 12px; }
@@ -148,7 +173,12 @@ const GitHubStarButton = () => {
         </svg>
 
         {/* Star Icon (animates on hover) */}
-        <svg viewBox="0 0 16 16" fill="currentColor" className="gh-star-icon-star" aria-hidden="true">
+        <svg
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          className="gh-star-icon-star"
+          aria-hidden="true"
+        >
           <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.873 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z" />
         </svg>
 
