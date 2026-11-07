@@ -8,6 +8,7 @@ import { SnippetList } from '../components/SnippetList';
 import { SnippetForm } from '../components/SnippetForm';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { BlacklistModal } from '../components/BlacklistModal';
+import { FirstUseGuide } from '../components/FirstUseGuide';
 import { Plus, Zap } from 'lucide-react';
 
 export function App() {
@@ -115,6 +116,7 @@ export function App() {
 
   /* ── Main ── */
   return (
+    <FirstUseGuide snippets={snippets} onClose={reload}>
     <div className="h-full relative flex flex-col overflow-hidden bg-white">
       {view === 'list' ? (
         <>
@@ -196,5 +198,6 @@ export function App() {
         />
       )}
     </div>
+    </FirstUseGuide>
   );
 }

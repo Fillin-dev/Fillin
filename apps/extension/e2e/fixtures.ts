@@ -71,7 +71,8 @@ export const test = base.extend<{
 export async function openExtensionWindow(
   context: BrowserContext,
   worker: Worker,
-  id: string
+  id: string,
+  readyButton = 'Create Snippet'
 ): Promise<Page> {
   const url = `chrome-extension://${id}/src/popup/index.html`;
   const opened = context.waitForEvent('page');
@@ -89,7 +90,7 @@ export async function openExtensionWindow(
   const page = await opened;
   await page.waitForURL(url);
   await expect(
-    page.getByRole('button', { name: 'Create Snippet' })
+    page.getByRole('button', { name: readyButton, exact: true })
   ).toBeVisible();
   return page;
 }

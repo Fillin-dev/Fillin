@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { App } from './App';
 import { InMemoryRepository } from '../storage/InMemoryRepository';
 import { SNIPPET_READ_ERROR } from '../storage/validateSnippetLibrary';
+import { FIRST_USE_KEY } from '../storage/firstUse';
 
 // Mock the services module
 vi.mock('../services', async () => {
@@ -20,6 +21,7 @@ import { snippetService } from '../services';
 describe('Snippet Management UI', () => {
   afterEach(() => { vi.restoreAllMocks(); });
   beforeEach(async () => {
+    localStorage.removeItem(FIRST_USE_KEY);
     // Reset the in-memory repository state
     const repo = snippetService['repository'] as unknown as InMemoryRepository;
     repo.shouldFail = false;
@@ -53,18 +55,21 @@ describe('Snippet Management UI', () => {
   });
 
   it('renders snippets and empty state', async () => {
-    render(<App />);
+    const { unmount } = render(<App />);
     
     // Initial loading
     expect(screen.getByAltText('Fillin Logo')).toBeInTheDocument();
     
-    // Empty state
+    // First-use guide can be skipped to reach the empty library.
+    expect(await screen.findByText('Create your first shortcut')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip guide' }));
     await waitFor(() => {
       expect(screen.getByText('No snippets yet')).toBeInTheDocument();
     });
 
     // With snippets
     await setupSnippets();
+    unmount();
     
     // Re-render to fetch new snippets
     render(<App />);

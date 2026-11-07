@@ -185,8 +185,10 @@ For a new version, run `pnpm release:version <version>`, refresh dependencies wi
 3. Click **Load unpacked** in the top-left menu.
 4. Select the build directory: `<path-to-repo>/Fillin/apps/extension/dist`.
 5.  **Fillin is ready!**
-   - Click the extension icon in Chrome to open the popup and add a shortcut (e.g., Trigger: `/email`, Content: `yourname@example.com`).
-   - Go to any text box on any webpage, type `/email`, and press `Ctrl + Space`.
+   - Click the extension icon in Chrome. The first-use guide helps you save one shortcut, try it in a practice field with `Ctrl + Space` (Control on Mac too), and export a JSON backup.
+   - You can skip the guide. If you close it after saving your first shortcut, it resumes at practice when you reopen Fillin. Existing libraries open as usual.
+   - Use **Export snippets** at the top of the library for later backups, or **Import snippets** to restore a JSON file. Practice does not add to usage statistics.
+   - On a website, type your saved trigger in a text box and press `Ctrl + Space`.
 
 ---
 

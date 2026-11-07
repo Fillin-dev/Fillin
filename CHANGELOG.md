@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.3] - 2026-11-07
+
+- Guide new users through creating a shortcut, practicing expansion with correct cursor placement, and exporting a restorable JSON backup.
+- Resume unfinished guidance after saving a shortcut, remember skipped or completed setup, and keep existing libraries in their usual view.
+- Handle guide storage and backup read failures with recoverable errors, and verify the complete first-use flow in the installed extension.
+
 ## [0.0.2] - 2026-11-07
 
 - Preserve saved snippets when storage reads fail or saved data is invalid, with a retry action in the popup.

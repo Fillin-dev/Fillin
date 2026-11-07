@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Snippet } from '@fillin/shared';
 import { Search, Edit2, Trash2, Zap, Download, Upload, Sparkles, Shield, ShieldAlert } from 'lucide-react';
+import { exportBackup } from '../utils/exportBackup';
 
 interface Props {
   snippets: Snippet[];
@@ -61,15 +62,12 @@ export function SnippetList({
       showToast('No snippets to export.');
       return;
     }
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(snippets, null, 2));
-    const downloadAnchor = document.createElement('a');
-    const dateStr = new Date().toISOString().slice(0, 10);
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `fillin-snippets-${dateStr}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-    showToast(`Exported ${snippets.length} snippet${snippets.length === 1 ? '' : 's'}`);
+    try {
+      exportBackup(snippets);
+      showToast('Backup download requested. Check your Downloads folder.');
+    } catch {
+      showToast('Could not export your backup. Please try again.');
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
