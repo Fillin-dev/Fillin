@@ -27,6 +27,30 @@ To test the extension locally:
 The extension runs on Vite. However, due to Chrome Extension CSP and module loading, hot module replacement (HMR) for the content scripts requires special configuration or manual rebuilds. For the popup, `pnpm run dev` works natively.
 The content script is explicitly bundled as an IIFE via `vite.content.config.ts`.
 
+## Real-browser Extension Tests
+
+Install the test browser once, then run the suite from the repository root:
+
+```bash
+corepack pnpm --filter @fillin/extension test:e2e:install
+corepack pnpm test:e2e
+```
+
+The root command builds the shared package and extension before launching Playwright's Chromium with the unpacked `apps/extension/dist` extension. Each test uses a fresh temporary browser profile and a local HTTP fixture server. It does not use your personal Chrome profile or saved snippets.
+
+The suite covers popup creation and persistence, typed expansion in inputs and textareas, cursor placement in the middle of text, multiline snippets, password-field exclusion, plain and formatted contenteditable insertion, simultaneous saves from two separate extension windows, and statistics updates from different website origins. Storage and messaging use the browser's real extension APIs; no content script is injected manually and no adapters are mocked. Third-party editor integrations such as Google Docs still need manual site-specific checks.
+
+To watch the browser after building, or inspect the most recent report:
+
+```bash
+corepack pnpm --filter @fillin/extension test:e2e --headed
+corepack pnpm --filter @fillin/extension exec playwright show-report
+```
+
+Set `FILLIN_E2E_PORT` if the default local port `4177` is occupied. Browser tests run separately from the unit suite, with retries disabled. Failure traces and screenshots are attached to the HTML report. Generated reports and results are ignored by Git.
+
+GitHub CI installs Chromium with its system dependencies and runs these checks after the production builds. Reports and failure traces are uploaded as the `extension-browser-tests` artifact and retained for seven days.
+
 ## Landing Page Development
 The landing page (`apps/landing/frontend`) is a standard Vite + React + TailwindCSS application.
 - Run `pnpm exec turbo run dev --filter=@fillin/landing-frontend` from the repository root to build the shared package before starting Vite.

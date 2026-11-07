@@ -32,6 +32,15 @@ pnpm exec turbo run lint typecheck test
 
 GitHub's `CI / Typecheck, test, and build` job runs `pnpm typecheck`, `pnpm test`, and `pnpm build` on every pull request and pushes to `main`. It uses Node 22, the pnpm version from `package.json`, and a frozen lockfile. It does not deploy or update the website download. Repository administrators can make this job a required status check in branch protection.
 
+CI also loads the production extension in Playwright's Chromium and checks real typing, cursor placement, password fields, rich-text insertion, and concurrent extension windows. To run these checks locally:
+
+```bash
+corepack pnpm --filter @fillin/extension test:e2e:install
+corepack pnpm test:e2e
+```
+
+The browser suite uses isolated temporary profiles and local fixture pages. See `docs/development/README.md` for coverage, headed mode, and failure reports.
+
 ## Production Builds
 To verify your changes do not break production bundles:
 ```bash

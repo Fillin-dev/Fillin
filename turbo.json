@@ -12,6 +12,11 @@
     "test": {
       "dependsOn": ["^build"]
     },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["CI", "FILLIN_E2E_PORT"]
+    },
     "dev": {
       "dependsOn": ["^build"],
       "cache": false,

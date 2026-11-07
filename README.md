@@ -219,6 +219,15 @@ pnpm format
 
 GitHub Actions runs typechecks, tests, and production builds for every pull request and pushes to `main`. The workflow installs the pinned pnpm version and uses `pnpm install --frozen-lockfile` so dependency changes must include an updated lockfile.
 
+It also runs real-browser extension checks in Chromium. To install the browser and run the same checks locally:
+
+```bash
+corepack pnpm --filter @fillin/extension test:e2e:install
+corepack pnpm test:e2e
+```
+
+These load the built extension in an isolated profile and exercise typing, cursor placement, password protection, rich-text insertion, and simultaneous extension windows. See [the development guide](docs/development/README.md) for details.
+
 ---
 
 ##  Privacy & Security Model
