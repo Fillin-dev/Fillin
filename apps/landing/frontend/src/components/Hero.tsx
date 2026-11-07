@@ -8,30 +8,30 @@ export const Hero = () => {
       
       {/* Floating Background Elements */}
       <div className="hidden lg:block absolute top-20 left-10 animate-[float_6s_ease-in-out_infinite] opacity-80 pointer-events-none" style={{ '--tw-rotate': '-6deg' } as any}>
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-5 -rotate-6 hover:rotate-0 transition-transform duration-300">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-5 -rotate-6 hover:rotate-0 transition-transform duration-300">
           <div className="text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">/email</div>
-          <div className="text-sm font-semibold text-gray-900">samprati@example.com</div>
+          <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">samprati@example.com</div>
         </div>
       </div>
 
       <div className="hidden lg:block absolute top-40 right-10 animate-[float_8s_ease-in-out_infinite_reverse] opacity-80 pointer-events-none" style={{ '--tw-rotate': '3deg' } as any}>
         <div className="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl p-5 rotate-3 hover:rotate-0 transition-transform duration-300">
-          <div className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">/zoom</div>
+          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">/zoom</div>
           <div className="text-sm font-semibold text-white">zoom.us/j/123456</div>
         </div>
       </div>
 
       <div className="hidden lg:block absolute bottom-20 left-1/4 animate-[float_7s_ease-in-out_infinite] opacity-60 pointer-events-none" style={{ '--tw-rotate': '12deg' } as any}>
-        <div className="bg-white border border-gray-200 rounded-xl shadow-md p-3 rotate-12 scale-75">
-          <div className="text-xs font-mono font-bold bg-gray-100 px-3 py-1.5 rounded-md text-gray-600">Ctrl + Space</div>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-3 rotate-12 scale-75">
+          <div className="text-xs font-mono font-bold bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-md text-gray-600 dark:text-gray-300">Ctrl + Space</div>
         </div>
       </div>
 
       {/* Floating Badge: In-Page Palette */}
       <div className="hidden lg:block absolute bottom-24 right-20 animate-[float_7.5s_ease-in-out_infinite_reverse] opacity-85 pointer-events-none" style={{ '--tw-rotate': '-4deg' } as any}>
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-3.5 -rotate-3 hover:rotate-0 transition-transform duration-300 flex items-center space-x-2">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-3.5 -rotate-3 hover:rotate-0 transition-transform duration-300 flex items-center space-x-2">
           <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-md shadow-sm">⌘ Shift K</span>
-          <span className="text-xs font-bold text-gray-800">Spotlight</span>
+          <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Spotlight</span>
         </div>
       </div>
 
@@ -42,19 +42,17 @@ export const Hero = () => {
         </div>
       </div>
 
-      {/* Playful Sticker 2 */}
-      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ml-[220px] -mt-[50px] md:ml-[340px] md:-mt-[70px] z-10 rotate-[12deg] hover:rotate-0 hover:scale-110 transition-all duration-300 cursor-pointer">
-        <div className="bg-blue-200 text-blue-900 font-bold text-sm px-4 py-2 rounded-full border-2 border-blue-900 shadow-[3px_3px_0px_0px_rgba(30,58,138,1)] flex items-center gap-1.5">
-          Chrome Extension 🧩
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="relative z-20">
-        <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black tracking-tighter text-gray-900 mb-8 leading-[0.95]">
+        <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black tracking-tighter text-gray-900 dark:text-gray-100 mb-8 leading-[0.95]">
           Fill in your <br className="hidden md:block" /> own blanks.
         </h1>
-        <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+        <div className="flex justify-center sm:justify-end max-w-4xl mx-auto px-4 mb-8">
+          <div className="inline-flex items-center gap-1.5 bg-blue-200 text-blue-900 font-bold text-sm px-4 py-2 rounded-full border-2 border-blue-900 shadow-[3px_3px_0px_0px_rgba(30,58,138,1)] rotate-6">
+            Chrome Extension 🧩
+          </div>
+        </div>
+        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
           Create shortcuts for anything you type repeatedly. {PRODUCT_NAME} expands your custom snippets across the web instantly.
         </p>
         

@@ -23,13 +23,13 @@ export const FAQ = () => {
   return (
     <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Frequently Asked Questions</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">Frequently Asked Questions</h2>
       </div>
       <div className="max-w-3xl mx-auto space-y-6">
         {faqs.map((faq, index) => (
-          <div key={index} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{faq.question}</h3>
-            <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+          <div key={index} className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">{faq.question}</h3>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
           </div>
         ))}
       </div>

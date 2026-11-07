@@ -38,14 +38,14 @@ export const Footer = () => {
   const spotlightY = spotlightPos?.y ?? 0;
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-100 pt-16 overflow-hidden relative select-none">
+    <footer className="bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 pt-16 overflow-hidden relative select-none">
       {/* Top Tier: Clean Links & Copyright */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 flex flex-col md:flex-row justify-between items-center relative z-10">
         <div className="flex items-center space-x-2 mb-4 md:mb-0">
-          <img src="/logo.svg" alt="Fillin Logo" className="w-6 h-6" />
-          <span className="font-semibold text-gray-900 tracking-tight">Fillin</span>
+          <img src="/logo.svg" alt="Fillin Logo" className="w-6 h-6 dark:invert" />
+          <span className="font-semibold text-gray-900 dark:text-gray-100 tracking-tight">Fillin</span>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           &copy; {new Date().getFullYear()} Fillin. All rights reserved. Zero tracking.
         </div>
         <div className="flex items-center space-x-6 mt-4 md:mt-0">
@@ -53,7 +53,7 @@ export const Footer = () => {
             href="https://github.com/vishalsingh-data/Fillin"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-medium"
           >
             GitHub
           </a>
@@ -85,7 +85,7 @@ export const Footer = () => {
         />
 
         {/* 1. Base Layer: Faint light gray text */}
-        <h2 className="text-[21vw] font-black tracking-tighter text-gray-200/80 uppercase leading-none select-none text-center transform translate-y-[6%] transition-colors duration-150">
+        <h2 className="text-[21vw] font-black tracking-tighter text-gray-200/80 dark:text-gray-800/80 uppercase leading-none select-none text-center transform translate-y-[6%] transition-colors duration-150">
           FILLIN
         </h2>
 
@@ -103,7 +103,7 @@ export const Footer = () => {
           }}
         >
           <h2
-            className="text-[21vw] font-black tracking-tighter text-gray-900 uppercase leading-none select-none text-center transform translate-y-[6%]"
+            className="text-[21vw] font-black tracking-tighter text-gray-900 dark:text-gray-100 uppercase leading-none select-none text-center transform translate-y-[6%]"
             aria-hidden="true"
           >
             FILLIN

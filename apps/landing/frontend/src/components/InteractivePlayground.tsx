@@ -39,20 +39,20 @@ export const InteractivePlayground = () => {
   };
 
   return (
-    <section className="py-24 bg-white border-y border-gray-100 overflow-hidden relative">
+    <section className="py-24 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 overflow-hidden relative">
       {/* Decorative background gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[1000px] pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 dark:opacity-10"></div>
+        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 dark:opacity-10"></div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-black tracking-tight text-gray-900 sm:text-5xl mb-4">
+          <h2 className="text-4xl font-black tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-4">
             Try it right now.
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto font-medium">
-            No installation required for this demo. Go to the end of the text and press <kbd className="px-2 py-1 bg-gray-100 border border-gray-200 rounded-md text-sm font-mono text-gray-900 mx-1">Ctrl + Space</kbd>.
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium">
+            No installation required for this demo. Go to the end of the text and press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md text-sm font-mono text-gray-900 dark:text-gray-100 mx-1">Ctrl + Space</kbd>.
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export const InteractivePlayground = () => {
             </div>
 
             {/* Editor Footer */}
-            <div className="bg-gray-800/30 border-t border-gray-800 px-4 py-2 flex items-center justify-between text-xs text-gray-500 font-mono">
+            <div className="bg-gray-800/30 border-t border-gray-800 px-4 py-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-mono">
               <div className="flex space-x-4">
                 <span>UTF-8</span>
                 <span>React</span>

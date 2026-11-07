@@ -17,10 +17,10 @@ export const Features = () => {
   return (
     <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-black tracking-tight text-gray-900 sm:text-5xl mb-4">
+        <h2 className="text-4xl font-black tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-4">
           Developer-grade speed. Real superpowers.
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto font-medium">
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium">
           Built local-first for uncompromising privacy, with modern tools to keep you in flow.
         </p>
       </div>
@@ -28,29 +28,29 @@ export const Features = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(270px,auto)]">
         
         {/* Card 1: Blazing Fast + Keystrokes Gamification (Spans 2 columns) */}
-        <div className="group md:col-span-2 bg-gray-50 rounded-3xl p-8 border border-gray-100 hover:bg-gray-100/80 transition-colors overflow-hidden relative flex flex-col justify-between">
+        <div className="group md:col-span-2 bg-gray-50 dark:bg-gray-950 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-colors overflow-hidden relative flex flex-col justify-between">
           <div className="flex items-start justify-between mb-6">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-              <Zap className="w-7 h-7 text-gray-900" />
+            <div className="w-14 h-14 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+              <Zap className="w-7 h-7 text-gray-900 dark:text-gray-100" />
             </div>
 
             {/* Live Gamification Widget Preview */}
-            <div className="bg-white border border-gray-200/90 rounded-2xl p-3 sm:p-4 shadow-sm inline-flex items-center space-x-3">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200/90 dark:border-gray-700/90 rounded-2xl p-3 sm:p-4 shadow-sm inline-flex items-center space-x-3">
               <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center flex-shrink-0">
                 <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
               </div>
               <div className="text-left">
-                <div className="text-sm font-bold text-gray-900 font-mono tracking-tight">
+                <div className="text-sm font-bold text-gray-900 dark:text-gray-100 font-mono tracking-tight">
                   {keystrokes.toLocaleString()} keystrokes saved
                 </div>
-                <div className="text-xs text-gray-500 font-medium">~1.2 hours of typing saved</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">~1.2 hours of typing saved</div>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Instant Expansion & Keystrokes Saved</h3>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-xl">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Instant Expansion & Keystrokes Saved</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-xl">
               Zero lag. Snippets expand in under 5 milliseconds with native DOM replacement. 
               Track your cumulative hours and keystrokes saved right in your popup—stored purely on your machine.
             </p>
@@ -86,20 +86,20 @@ export const Features = () => {
         </div>
 
         {/* Card 3: Smart Organization (#Tags) (Spans 1 column) */}
-        <div className="group md:col-span-1 bg-white rounded-3xl p-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden relative flex flex-col justify-between">
+        <div className="group md:col-span-1 bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow overflow-hidden relative flex flex-col justify-between">
           <div>
-            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-              <Tag className="w-7 h-7 text-gray-900" />
+            <div className="w-14 h-14 bg-gray-50 dark:bg-gray-950 rounded-2xl flex items-center justify-center border border-gray-100 dark:border-gray-800 mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+              <Tag className="w-7 h-7 text-gray-900 dark:text-gray-100" />
             </div>
 
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Organize with #Tags</h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Organize with #Tags</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
               Tag your snippets and filter your collection in one click. No clunky folder hierarchies.
             </p>
           </div>
 
           {/* Interactive Tag Pills Mini-Widget */}
-          <div className="bg-gray-50 rounded-2xl p-3 border border-gray-100">
+          <div className="bg-gray-50 dark:bg-gray-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
             <div className="flex flex-wrap gap-1.5 mb-2.5">
               {tags.map((t) => (
                 <button
@@ -107,25 +107,25 @@ export const Features = () => {
                   onClick={() => setActiveTag(t)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                     activeTag === t
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                      ? 'bg-gray-900 dark:bg-gray-700 text-white shadow-sm'
+                      : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   {t}
                 </button>
               ))}
             </div>
-            <div className="text-[11px] font-mono text-gray-500 bg-white p-2 rounded-lg border border-gray-100 truncate">
+            <div className="text-[11px] font-mono text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800 truncate">
               {tagSnippets[activeTag]}
             </div>
           </div>
         </div>
 
         {/* Card 4: Works Everywhere (Spans 2 columns) */}
-        <div className="group md:col-span-2 bg-gray-50 rounded-3xl p-8 border border-gray-100 hover:bg-gray-100/80 transition-colors overflow-hidden relative flex flex-col justify-between">
+        <div className="group md:col-span-2 bg-gray-50 dark:bg-gray-950 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-colors overflow-hidden relative flex flex-col justify-between">
           <div className="flex items-start justify-between mb-6">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-              <Keyboard className="w-7 h-7 text-gray-900" />
+            <div className="w-14 h-14 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+              <Keyboard className="w-7 h-7 text-gray-900 dark:text-gray-100" />
             </div>
 
             {/* App support badges */}
@@ -133,7 +133,7 @@ export const Features = () => {
               {['Notion', 'Gmail', 'Google Docs', 'Slack', 'Textareas'].map((app) => (
                 <span
                   key={app}
-                  className="px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 shadow-sm"
+                  className="px-2.5 py-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 shadow-sm"
                 >
                   {app}
                 </span>
@@ -142,8 +142,8 @@ export const Features = () => {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Universal DOM Compatibility</h3>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-xl">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Universal DOM Compatibility</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-xl">
               Engineered with specialized adapters for standard inputs, React synthetic event wrappers, and complex contenteditable rich-text editors. Expands cleanly without breaking undo history.
             </p>
           </div>

@@ -53,11 +53,14 @@ jobs:
       - name: Verify the website extension release
         run: pnpm verify:release
 
-      - name: Install Chromium for extension checks
+      - name: Install Chromium for browser checks
         run: pnpm --filter @fillin/extension exec playwright install --with-deps chromium
 
       - name: Test the installed extension in Chromium
         run: pnpm --filter @fillin/extension test:e2e
+
+      - name: Test landing page themes in Chromium
+        run: pnpm --filter @fillin/landing-frontend test:e2e
 
       - name: Upload browser test report and failure traces
         if: ${{ !cancelled() }}
@@ -67,5 +70,16 @@ jobs:
           path: |
             apps/extension/playwright-report/
             apps/extension/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload landing page browser test report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: landing-browser-tests
+          path: |
+            apps/landing/frontend/playwright-report/
+            apps/landing/frontend/test-results/
           if-no-files-found: ignore
           retention-days: 7

@@ -17,6 +17,8 @@
 
 Follow the simple 3-step guide on the website to install the extension directly into Chrome!
 
+The website's **Color theme** control offers **System**, **Light**, and **Dark** modes, including the installation page. System follows your device setting; an explicit choice is remembered locally and shared between open website tabs. The switch also works for the current visit when browser storage is blocked.
+
 ---
 
 ##  Overview
@@ -231,6 +233,8 @@ corepack pnpm test:e2e
 ```
 
 These load the built extension in an isolated profile and exercise typing, cursor placement, password protection, rich-text insertion, and simultaneous extension windows. See [the development guide](docs/development/README.md) for details.
+
+After a production build, run `corepack pnpm --filter @fillin/landing-frontend test:e2e` for the website theme checks. They cover system changes, saved preferences, startup without a light flash, blocked storage, multiple tabs, text contrast, demos, and both pages at phone, tablet, and desktop widths. GitHub Actions runs these checks too.
 
 ---
 

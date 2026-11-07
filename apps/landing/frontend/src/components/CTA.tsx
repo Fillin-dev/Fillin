@@ -3,12 +3,12 @@ import { DownloadButtons } from './DownloadButtons';
 
 export const CTA = () => {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 text-center bg-gray-50">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 text-center bg-gray-50 dark:bg-gray-950">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-5xl mb-6">
+        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl mb-6">
           Ready to save time?
         </h2>
-        <p className="text-xl text-gray-600 mb-10">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-10">
           Join thousands of developers typing faster with Fillin.
         </p>
         <div className="max-w-2xl mx-auto">

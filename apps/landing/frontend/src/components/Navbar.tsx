@@ -1,21 +1,23 @@
 import React from 'react';
 import { PRODUCT_NAME } from '@fillin/shared';
+import { ThemeControl } from './ThemeControl';
 
 export const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Fillin Logo" className="w-8 h-8" />
-            <span className="font-bold text-xl text-gray-900 tracking-tight">{PRODUCT_NAME}</span>
+            <img src="/logo.svg" alt="Fillin Logo" className="w-8 h-8 dark:invert" />
+            <span className="font-bold text-xl text-gray-900 dark:text-gray-100 tracking-tight">{PRODUCT_NAME}</span>
           </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">How it works</a>
-            <a href="#features" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-            <a href="#privacy" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Privacy</a>
+          <div className="hidden lg:flex items-center space-x-8">
+            <a href="#how-it-works" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">How it works</a>
+            <a href="#features" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Features</a>
+            <a href="#privacy" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Privacy</a>
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            <ThemeControl />
             <GitHubStarButton />
           </div>
         </div>
@@ -50,11 +52,11 @@ const GitHubStarButton = () => {
           gap: 7px;
           padding: 7px 16px;
           border-radius: 9999px;
-          border: 1.5px solid #e5e7eb;
-          background: #ffffff;
+          border: 1.5px solid var(--gh-border, #e5e7eb);
+          background: var(--gh-bg, #ffffff);
           font-size: 13px;
           font-weight: 600;
-          color: #111827;
+          color: var(--gh-text, #111827);
           text-decoration: none;
           cursor: pointer;
           transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -63,7 +65,7 @@ const GitHubStarButton = () => {
         }
         .gh-star-btn:hover {
           border-color: #f59e0b;
-          background: #fffbeb;
+          background: var(--gh-hover, #fffbeb);
           animation: glow-pulse 1.2s ease-in-out infinite;
         }
         .gh-star-icon-star {
@@ -95,17 +97,17 @@ const GitHubStarButton = () => {
           width: 15px;
           height: 15px;
           flex-shrink: 0;
-          color: #374151;
+          color: inherit;
         }
         .gh-divider {
           width: 1px;
           height: 14px;
-          background: #e5e7eb;
+          background: var(--gh-border, #e5e7eb);
           margin: 0 1px;
         }
         .gh-count {
           font-size: 12px;
-          color: #6b7280;
+          color: var(--gh-muted, #6b7280);
           font-weight: 500;
           transition: color 0.2s;
           letter-spacing: 0.01em;
@@ -117,7 +119,19 @@ const GitHubStarButton = () => {
           transition: color 0.2s;
         }
         .gh-star-btn:hover .gh-label {
-          color: #92400e;
+          color: var(--gh-hover-text, #92400e);
+        }
+        .dark .gh-star-btn {
+          --gh-border: #374151;
+          --gh-bg: #111827;
+          --gh-text: #f3f4f6;
+          --gh-muted: #9ca3af;
+          --gh-hover: #292211;
+          --gh-hover-text: #fcd34d;
+        }
+        @media (max-width: 639px) {
+          .gh-star-btn { padding: 8px 12px; }
+          .gh-count, .gh-divider, .gh-star-icon-star { display: none; }
         }
       `}</style>
 
