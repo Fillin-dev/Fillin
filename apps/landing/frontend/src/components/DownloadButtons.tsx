@@ -1,12 +1,13 @@
 import React from 'react';
 import { Download, Puzzle } from 'lucide-react';
+import release from '../../public/fillin-extension-release.json';
 
 export const DownloadButtons = () => {
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
       <a 
-        href="/fillin-extension.zip"
-        download="fillin-extension.zip"
+        href={`/fillin-extension.zip?v=${release.version}`}
+        download={`fillin-extension-${release.version}.zip`}
         onClick={() => {
           setTimeout(() => {
             window.location.href = '/install';
@@ -16,7 +17,7 @@ export const DownloadButtons = () => {
         className="flex items-center gap-2 px-6 py-4 bg-gray-900 text-white rounded-full font-semibold hover:bg-gray-800 transition-colors w-full sm:w-auto justify-center"
       >
         <Download size={20} />
-        Download Locally
+        Download Fillin {release.version}
       </a>
       <button 
         disabled
@@ -26,6 +27,9 @@ export const DownloadButtons = () => {
         <Puzzle size={20} />
         Chrome Web Store (Coming Soon)
       </button>
+      <a href={`/fillin-extension-release.json?v=${release.version}`} className="text-sm text-gray-500 underline underline-offset-4">
+        Release notes &amp; SHA-256
+      </a>
     </div>
   );
 };

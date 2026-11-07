@@ -18,6 +18,9 @@ The `landing/backend` is an optional Fastify service exposing only `GET /health`
 ## Shared Package Builds
 `@fillin/shared` exports compiled ES modules and type declarations from `packages/shared/dist`. Turbo builds this package before dependent builds, tests, typechecks, and development servers. Production output excludes tests and contains no Chrome APIs, DOM code, React components, or server code.
 
+## Release Verification
+The extension packages only its own build output, using sorted archive entries and fixed ZIP timestamps and permissions. Its package, source manifest, and built manifest versions must agree. Repository-level release scripts validate the archive and changelog, stage the website download and SHA-256 metadata, build the frontend, and verify that the deployment copy matches. The frontend reads only its own staged metadata; it imports no extension code. CI compares the staged download against the current extension build and rejects version drift or stale files.
+
 ## Snippet Writes
 All snippet mutations acquire the same Web Lock before reading storage and release it after saving. This coordinates concurrent operations across extension pages on the same origin. Environments without Web Locks use an in-process queue shared by service instances. Imports and starter packs use the same lock as individual edits. Storage errors propagate to the caller and do not block later operations.
 

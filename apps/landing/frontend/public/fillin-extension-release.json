@@ -1,0 +1,19 @@
+{
+  "version": "0.0.2",
+  "archive": "fillin-extension.zip",
+  "sha256": "7d73dc6219b81b5edf41c88001b296ac063c1493b98104e99c51ca8dc8b941e2",
+  "size": 130190,
+  "files": {
+    "BlacklistService.js": "f189b328ddbdd3ae38af802232d5bb6e28b656fa01421113553a2c05d21b80ed",
+    "background.js": "dcece2532d356266d99244f66036ab925b4d9f3ba7a3a6fec226d5ad22d0015a",
+    "content.js": "7832fd2a7c38339e872986544d501cc54b35ace584f63a955e3e2e48d11cb101",
+    "icon128.png": "f75f79e53b3dcb61c32e505ab6aaf75d0c54d00c773f21a6edf5af65fd8c6cac",
+    "icon16.png": "8930d3db6bccc346745b04ee1e10f5e2e7d987f2d8414874bbfcc82872b9f4a8",
+    "icon48.png": "4d2d144c8c1d65e48fde55cb8981d3ca43476fa3b7c32606e326f503bb51fce7",
+    "manifest.json": "9f0583818c297a618bbf86633b25d7713c9e59ddd2bdd0990d14dfafa58a1e21",
+    "popup.css": "de3c92284f2ae08a68475105a8a4394ba07d850c8679af2dc22ff942999267fc",
+    "popup.js": "cbab585cf5093948e47002d111df04e254729384a4a874f3d511fefe4884b648",
+    "src/popup/index.html": "93409376b1f9196c3c83532e845167243f1d4ef4805b6eac294e46684639a5e1"
+  },
+  "notes": "- Preserve saved snippets when storage reads fail or saved data is invalid, with a retry action in the popup.\n- Prevent concurrent snippet, statistics, and blocked-website updates from overwriting one another.\n- Use the Google Docs clipboard fallback only after insertion fails, and confirm a successful copy before prompting to paste.\n- Remove the waitlist and make the remaining health API independently deployable.\n- Keep extension packaging independent of the website and compile the shared package before dependent builds.\n- Add GitHub checks for typechecking, unit tests, production builds, and nine real-browser extension tests.\n- Align extension versions and verify the website download using SHA-256 and the built extension's file contents."
+}

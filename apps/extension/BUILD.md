@@ -19,7 +19,7 @@ To create a production-ready build of the Fillin extension for submission to the
    - `src/popup/index.html` (and associated assets)
 
 4. **Verify the distribution archive:**
-   The build creates `build/fillin-extension.zip` automatically, with `manifest.json` at its root. To repackage an existing `dist/` without rebuilding, run `pnpm run package` from the extension directory.
+   The build creates `build/fillin-extension.zip` automatically, with `manifest.json` at its root, plus `build/release.json` containing its version, SHA-256, size, and file hashes. The package, source manifest, and built manifest versions must agree. To repackage an existing `dist/` without rebuilding, run `pnpm run package` from the extension directory.
 
 5. **Upload to Chrome Web Store:**
    Upload `build/fillin-extension.zip` to the Chrome Developer Dashboard.
@@ -32,7 +32,9 @@ From the repository root, run:
 pnpm release:extension
 ```
 
-This separate release step builds the extension and copies its archive into the landing frontend's `public/fillin-extension.zip`. Run it before building or deploying the landing frontend. Ordinary extension and monorepo builds leave the website download unchanged.
+This repository-level release step builds the extension, validates its version and changelog entry, stages its archive and metadata into the website, builds the landing frontend, and verifies the resulting download. Ordinary extension and monorepo builds leave the website download unchanged.
+
+Use `pnpm release:version <new-version>` to update the package and source manifest together, run `pnpm install --frozen-lockfile`, and add the version's notes to `CHANGELOG.md` before preparing a new release. A different archive cannot replace an existing version. See [the release guide](../../docs/development/releases.md) for the complete process.
 
 ### Security Notes
 - No development URLs or secrets are bundled.

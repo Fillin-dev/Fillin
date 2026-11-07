@@ -1,11 +1,11 @@
 {
   "name": "@fillin/extension",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build && vite build -c vite.content.config.ts && npm run package",
-    "package": "node scripts/package.js",
+    "package": "node scripts/package.mjs",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.e2e.json",
     "test": "vitest run",

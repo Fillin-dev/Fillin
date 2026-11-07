@@ -7,11 +7,13 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "release:extension": "turbo run build --filter=@fillin/extension && node scripts/stage-extension.mjs",
+    "release:extension": "turbo run build --filter=@fillin/extension --force && node scripts/stage-extension.mjs && turbo run build --filter=@fillin/landing-frontend --force && node scripts/verify-release.mjs",
+    "release:version": "node scripts/set-extension-version.mjs",
+    "verify:release": "node scripts/verify-release.mjs",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "test": "node --test scripts/release.test.mjs && turbo run test",
     "test:e2e": "turbo run test:e2e --filter=@fillin/extension",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\""
   },

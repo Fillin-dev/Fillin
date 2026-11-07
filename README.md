@@ -172,8 +172,9 @@ To update the website's extension download, run this separate release command fr
 pnpm release:extension
 ```
 
-This rebuilds the extension and copies its ZIP to `apps/landing/frontend/public/fillin-extension.zip`.
-Run it before building or deploying the landing frontend when publishing a new extension version.
+This builds and packages the extension, stages the website ZIP and release notes, builds the landing frontend, and verifies the download's version, SHA-256, and file contents. It prepares the current release for deployment without publishing it.
+
+For a new version, run `pnpm release:version <version>`, refresh dependencies with `pnpm install --frozen-lockfile`, and add its notes to [CHANGELOG.md](CHANGELOG.md) before preparing the release. See [the release guide](docs/development/releases.md) for the complete process and checksum verification.
 
 ---
 
@@ -218,6 +219,7 @@ pnpm format
 ```
 
 GitHub Actions runs typechecks, tests, and production builds for every pull request and pushes to `main`. The workflow installs the pinned pnpm version and uses `pnpm install --frozen-lockfile` so dependency changes must include an updated lockfile.
+It also runs `pnpm verify:release` to reject stale or mismatched website downloads.
 
 It also runs real-browser extension checks in Chromium. To install the browser and run the same checks locally:
 

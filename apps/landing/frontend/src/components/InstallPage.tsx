@@ -2,6 +2,7 @@ import React from 'react';
 import { FolderOpen, Puzzle } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import release from '../../public/fillin-extension-release.json';
 
 export const InstallPage = () => {
   return (
@@ -26,7 +27,7 @@ export const InstallPage = () => {
             <div className="flex-grow">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Extract the downloaded .zip</h3>
               <p className="text-gray-600 mb-4">
-                You should have just downloaded <code className="bg-gray-100 px-2 py-1 rounded text-sm">fillin-extension.zip</code>. Unzip this file to a safe folder on your computer (like your Documents).
+                You should have just downloaded <code className="bg-gray-100 px-2 py-1 rounded text-sm">fillin-extension-{release.version}.zip</code>. Unzip this file to a safe folder on your computer (like your Documents).
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-50 p-3 rounded-xl">
                 <FolderOpen className="w-5 h-5 text-gray-400" />

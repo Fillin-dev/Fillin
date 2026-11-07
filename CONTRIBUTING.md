@@ -30,7 +30,7 @@ pnpm exec turbo run lint typecheck test
 - `typecheck`: Runs `tsc --noEmit` across all apps.
 - `test`: Executes the Vitest suites.
 
-GitHub's `CI / Typecheck, test, and build` job runs `pnpm typecheck`, `pnpm test`, and `pnpm build` on every pull request and pushes to `main`. It uses Node 22, the pnpm version from `package.json`, and a frozen lockfile. It does not deploy or update the website download. Repository administrators can make this job a required status check in branch protection.
+GitHub's `CI / Typecheck, test, and build` job runs `pnpm typecheck`, `pnpm test`, `pnpm build`, and `pnpm verify:release` on every pull request and pushes to `main`. It uses Node 22, the pnpm version from `package.json`, and a frozen lockfile. It does not deploy or update the website download. Repository administrators can make this job a required status check in branch protection.
 
 CI also loads the production extension in Playwright's Chromium and checks real typing, cursor placement, password fields, rich-text insertion, and concurrent extension windows. To run these checks locally:
 
@@ -47,3 +47,5 @@ To verify your changes do not break production bundles:
 pnpm exec turbo run build
 ```
 See `apps/extension/BUILD.md` for specific instructions on packing the Chrome extension for submission.
+
+When extension build contents change, increase its version with `pnpm release:version <version>`, run `pnpm install --frozen-lockfile`, record the changes in `CHANGELOG.md`, and run `pnpm release:extension`. Commit the staged ZIP and release metadata along with the source changes. See [the release guide](docs/development/releases.md).
