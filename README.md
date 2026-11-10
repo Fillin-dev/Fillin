@@ -13,7 +13,7 @@
 
 ## 📥 Download & Install
 
-**👉 [Download the Fillin Extension Here](https://fillin-eta.vercel.app/)**
+**👉 [Download the Fillin Extension Here](https://fillin-phi.vercel.app/)**
 
 Follow the simple 3-step guide on the website to install the extension directly into Chrome!
 
