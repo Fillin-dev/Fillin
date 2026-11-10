@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SnippetForm } from './SnippetForm';
 import { Snippet } from '@fillin/shared';
 
@@ -28,13 +28,7 @@ describe('SnippetForm Conflict & Duplicate Detection', () => {
     const onSave = vi.fn();
     const onCancel = vi.fn();
 
-    render(
-      <SnippetForm
-        existingSnippets={existingSnippets}
-        onSave={onSave}
-        onCancel={onCancel}
-      />
-    );
+    render(<SnippetForm existingSnippets={existingSnippets} onSave={onSave} onCancel={onCancel} />);
 
     const triggerInput = screen.getByPlaceholderText('email, name, sig...');
     fireEvent.change(triggerInput, { target: { value: 'email' } });
@@ -52,13 +46,7 @@ describe('SnippetForm Conflict & Duplicate Detection', () => {
     const onSave = vi.fn();
     const onCancel = vi.fn();
 
-    render(
-      <SnippetForm
-        existingSnippets={existingSnippets}
-        onSave={onSave}
-        onCancel={onCancel}
-      />
-    );
+    render(<SnippetForm existingSnippets={existingSnippets} onSave={onSave} onCancel={onCancel} />);
 
     const triggerInput = screen.getByPlaceholderText('email, name, sig...');
     // Type /e which is a prefix of /email
@@ -67,17 +55,11 @@ describe('SnippetForm Conflict & Duplicate Detection', () => {
     expect(screen.getByText(/Shares prefix with "\/email"/i)).toBeInTheDocument();
   });
 
-  it('allows saving when trigger is unique', () => {
+  it('allows saving when trigger is unique', async () => {
     const onSave = vi.fn();
     const onCancel = vi.fn();
 
-    render(
-      <SnippetForm
-        existingSnippets={existingSnippets}
-        onSave={onSave}
-        onCancel={onCancel}
-      />
-    );
+    render(<SnippetForm existingSnippets={existingSnippets} onSave={onSave} onCancel={onCancel} />);
 
     const triggerInput = screen.getByPlaceholderText('email, name, sig...');
     const contentInput = screen.getByPlaceholderText('The text that will be inserted...');
@@ -87,5 +69,6 @@ describe('SnippetForm Conflict & Duplicate Detection', () => {
 
     fireEvent.submit(screen.getByText('Save Snippet').closest('form')!);
     expect(onSave).toHaveBeenCalledWith('/phone', '+123456789', false, undefined);
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
   });
 });

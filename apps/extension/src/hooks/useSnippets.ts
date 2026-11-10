@@ -8,24 +8,27 @@ export function useSnippets(service: SnippetService) {
   const [error, setError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const loadSnippets = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await service.getSnippets();
-      setSnippets(data);
-      setLoadError(null);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load snippets';
-      setError(message);
-      setLoadError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, [service]);
+  const loadSnippets = useCallback(
+    async (showLoading = false) => {
+      try {
+        if (showLoading) setLoading(true);
+        setError(null);
+        const data = await service.getSnippets();
+        setSnippets(data);
+        setLoadError(null);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load snippets';
+        setError(message);
+        setLoadError(message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [service]
+  );
 
   useEffect(() => {
-    loadSnippets();
+    loadSnippets(true);
   }, [loadSnippets]);
 
   const createSnippet = async (
@@ -105,6 +108,6 @@ export function useSnippets(service: SnippetService) {
     deleteSnippet,
     loadStarterPack,
     importSnippets,
-    reload: loadSnippets,
+    reload: () => loadSnippets(true),
   };
 }

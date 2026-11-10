@@ -56,12 +56,7 @@ export function App() {
 
   const handleDelete = (id: string) => setPendingDeleteId(id);
 
-  const handleSave = async (
-    trigger: string,
-    content: string,
-    isHtml: boolean,
-    tags?: string[]
-  ) => {
+  const handleSave = async (trigger: string, content: string, isHtml: boolean, tags?: string[]) => {
     if (editingSnippet) {
       await updateSnippet(editingSnippet.id, trigger, content, isHtml, tags);
     } else {
@@ -107,7 +102,10 @@ export function App() {
           <h1 className="font-semibold text-gray-900">Unable to load snippets</h1>
           <p className="text-sm text-gray-600">{loadError}</p>
         </div>
-        <button onClick={() => void reload()} className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-gray-200">
+        <button
+          onClick={() => void reload()}
+          className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-gray-200"
+        >
           Try again
         </button>
       </div>
@@ -117,87 +115,85 @@ export function App() {
   /* ── Main ── */
   return (
     <FirstUseGuide snippets={snippets} onClose={reload}>
-    <div className="h-full relative flex flex-col overflow-hidden bg-white">
-      {view === 'list' ? (
-        <>
-          <div className="flex-1 overflow-hidden">
-            <SnippetList
-              snippets={snippets}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              onLoadStarterPack={loadStarterPack}
-              onImport={importSnippets}
-              onOpenBlacklistModal={() => setIsBlacklistModalOpen(true)}
-              currentDomain={currentDomain}
-              isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
-              onToggleCurrentDomain={toggleCurrentDomain}
-            />
-          </div>
-
-          {/* Footer Area: Stats + CTA */}
-          <div className="px-4 py-2.5 border-t border-gray-100 bg-white space-y-2">
-            {/* Gamification metric */}
-            <div className="flex items-center justify-center space-x-1.5 text-xs text-gray-500 select-none">
-              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span>
-                <strong>{stats.keystrokesSaved.toLocaleString()}</strong> keystrokes saved
-                <span className="text-gray-300 mx-1.5">·</span>
-                ~{formattedTimeSaved}
-              </span>
+      <div className="popup-shell">
+        {view === 'list' ? (
+          <>
+            <div className="library-main">
+              <SnippetList
+                snippets={snippets}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onLoadStarterPack={loadStarterPack}
+                onImport={importSnippets}
+                onOpenBlacklistModal={() => setIsBlacklistModalOpen(true)}
+                currentDomain={currentDomain}
+                isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
+                onToggleCurrentDomain={toggleCurrentDomain}
+              />
             </div>
 
-            <button
-              onClick={handleNew}
-              className="w-full flex items-center justify-center space-x-2 py-2 rounded-xl font-semibold text-sm text-white bg-gray-900
-                         hover:bg-black transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-gray-200"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Create Snippet</span>
-            </button>
-          </div>
+            {/* Footer Area: Stats + CTA */}
+            <footer className="library-footer">
+              {/* Gamification metric */}
+              <div className="library-stats">
+                <span>
+                  <Zap size={13} aria-hidden="true" />
+                  <strong>{stats.keystrokesSaved.toLocaleString()}</strong> keystrokes saved
+                </span>
+                <span>{formattedTimeSaved} saved</span>
+              </div>
 
-          {/* Error toast */}
-          {(error || blacklistError) && (
-            <div className="absolute top-3 left-3 right-3 px-3 py-2 rounded-xl text-xs font-medium text-center animate-fade-in bg-red-50 border border-red-200 text-red-600">
-              {error || blacklistError}
-            </div>
-          )}
+              <button onClick={handleNew} className="popup-primary">
+                <Plus className="w-4 h-4" />
+                <span>Create Snippet</span>
+              </button>
+              <p className="expansion-hint">
+                Type a shortcut, then press <kbd>Ctrl + Space</kbd>
+              </p>
+            </footer>
 
-          {/* Confirm delete dialog */}
-          {pendingDeleteId && pendingDeleteSnippet && (
-            <ConfirmDialog
-              trigger={pendingDeleteSnippet.trigger}
-              onConfirm={handleConfirmDelete}
-              onCancel={() => setPendingDeleteId(null)}
-            />
-          )}
+            {/* Error toast */}
+            {(error || (!isBlacklistModalOpen && blacklistError)) && (
+              <div role="alert" className="app-error-banner">
+                {error || blacklistError}
+              </div>
+            )}
 
-          {/* Blacklist / Site pause management modal */}
-          {isBlacklistModalOpen && (
-            <BlacklistModal
-              error={blacklistError}
-              currentDomain={currentDomain}
-              isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
-              blacklistedDomains={blacklistedDomains}
-              onToggleCurrentDomain={toggleCurrentDomain}
-              onAddDomain={addDomain}
-              onRemoveDomain={removeDomain}
-              onClose={() => setIsBlacklistModalOpen(false)}
-            />
-          )}
-        </>
-      ) : (
-        <SnippetForm
-          snippet={editingSnippet}
-          existingSnippets={snippets}
-          onSave={handleSave}
-          onCancel={() => setView('list')}
-          error={error}
-        />
-      )}
-    </div>
+            {/* Confirm delete dialog */}
+            {pendingDeleteId && pendingDeleteSnippet && (
+              <ConfirmDialog
+                trigger={pendingDeleteSnippet.trigger}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setPendingDeleteId(null)}
+              />
+            )}
+
+            {/* Blacklist / Site pause management modal */}
+            {isBlacklistModalOpen && (
+              <BlacklistModal
+                error={blacklistError}
+                currentDomain={currentDomain}
+                isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
+                blacklistedDomains={blacklistedDomains}
+                onToggleCurrentDomain={toggleCurrentDomain}
+                onAddDomain={addDomain}
+                onRemoveDomain={removeDomain}
+                onClose={() => setIsBlacklistModalOpen(false)}
+              />
+            )}
+          </>
+        ) : (
+          <SnippetForm
+            snippet={editingSnippet}
+            existingSnippets={snippets}
+            onSave={handleSave}
+            onCancel={() => setView('list')}
+            error={error}
+          />
+        )}
+      </div>
     </FirstUseGuide>
   );
 }

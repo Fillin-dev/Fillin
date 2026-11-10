@@ -1,8 +1,8 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.5",
   "archive": "fillin-extension.zip",
-  "sha256": "7ce085424232d8fa422fe8679714241fca75d0e63c947e9a1ba814fd1c507177",
-  "size": 132289,
+  "sha256": "54f7ce67f07d0f4a490189937c89b6a105e67255cc18e0da1d00079c05bcc4aa",
+  "size": 132783,
   "files": {
     "BlacklistService.js": "f189b328ddbdd3ae38af802232d5bb6e28b656fa01421113553a2c05d21b80ed",
     "background.js": "dcece2532d356266d99244f66036ab925b4d9f3ba7a3a6fec226d5ad22d0015a",
@@ -10,10 +10,10 @@
     "icon128.png": "f75f79e53b3dcb61c32e505ab6aaf75d0c54d00c773f21a6edf5af65fd8c6cac",
     "icon16.png": "8930d3db6bccc346745b04ee1e10f5e2e7d987f2d8414874bbfcc82872b9f4a8",
     "icon48.png": "4d2d144c8c1d65e48fde55cb8981d3ca43476fa3b7c32606e326f503bb51fce7",
-    "manifest.json": "58c8d6c55eec2714acc4f60693882900eef49069905c975a88371676a0670124",
-    "popup.css": "cb76be5efe37ef85492a64fbf4a83a345335154945f6549265a2d384de8a911d",
-    "popup.js": "d84adfa21b0f1873ed2c2046a1b8e819294c49e3b884c1cba0811d94e4fe583b",
-    "src/popup/index.html": "93409376b1f9196c3c83532e845167243f1d4ef4805b6eac294e46684639a5e1"
+    "manifest.json": "637d884bcda940967dca9359c2343c50511cc25b0cff12e1178531584396addc",
+    "popup.css": "ea0a6d96d051d96110051ecdecefa2b7b89dea9e03ad523d9b98488cf17ca99f",
+    "popup.js": "8f60d8c6cd779feff49c056169c463734728078832d5d0905adf4b5433187d1a",
+    "src/popup/index.html": "3dbf2edcb2d6341ad568b0de96b4d5c6e29a476bd87403f4fc21965b83ba7d0c"
   },
-  "notes": "- Guide new users through creating a shortcut, practicing expansion with correct cursor placement, and exporting a restorable JSON backup.\n- Resume unfinished guidance after saving a shortcut, remember skipped or completed setup, and keep existing libraries in their usual view.\n- Handle guide storage and backup read failures with recoverable errors, and verify the complete first-use flow in the installed extension."
+  "notes": "- Fix the collapsed toolbar popup by giving its document an explicit width and intrinsic height, while fitting the content to the height Chrome provides.\n- Add regression checks that open the real toolbar popup without an emulated viewport, covering first-use guidance, the saved library, and the editor's Save button."
 }

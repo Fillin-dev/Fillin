@@ -14,9 +14,7 @@ export function useBlacklist() {
       setBlacklistedDomains(list);
       setError(null);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Could not load blocked websites.'
-      );
+      setError(err instanceof Error ? err.message : 'Could not load blocked websites.');
     } finally {
       setLoading(false);
     }
@@ -40,9 +38,7 @@ export function useBlacklist() {
         }
       });
     } else if (typeof window !== 'undefined') {
-      const clean = window.location.hostname
-        .replace(/^www\./, '')
-        .toLowerCase();
+      const clean = window.location.hostname.replace(/^www\./, '').toLowerCase();
       if (clean && clean !== 'localhost') {
         setCurrentDomain(clean);
       }
@@ -54,10 +50,7 @@ export function useBlacklist() {
     loadBlacklist();
 
     if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
-      const listener = (
-        changes: { [key: string]: chrome.storage.StorageChange },
-        area: string
-      ) => {
+      const listener = (changes: { [key: string]: chrome.storage.StorageChange }, area: string) => {
         if (area === 'local' && changes['fillin_blacklist']) {
           setBlacklistedDomains(changes['fillin_blacklist'].newValue || []);
         }
@@ -69,9 +62,7 @@ export function useBlacklist() {
 
   const isCurrentDomainBlacklisted =
     !!currentDomain &&
-    blacklistedDomains.some(
-      (d) => currentDomain === d || currentDomain.endsWith('.' + d)
-    );
+    blacklistedDomains.some((d) => currentDomain === d || currentDomain.endsWith('.' + d));
 
   const toggleCurrentDomain = useCallback(async () => {
     if (!currentDomain) return;
@@ -81,9 +72,7 @@ export function useBlacklist() {
       setError(null);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Could not update blocked websites. Try again.'
+        err instanceof Error ? err.message : 'Could not update blocked websites. Try again.'
       );
     }
   }, [currentDomain]);
@@ -93,12 +82,12 @@ export function useBlacklist() {
       const updated = await blacklistService.addDomain(domain);
       setBlacklistedDomains(updated);
       setError(null);
+      return true;
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Could not update blocked websites. Try again.'
+        err instanceof Error ? err.message : 'Could not update blocked websites. Try again.'
       );
+      return false;
     }
   }, []);
 
@@ -109,9 +98,7 @@ export function useBlacklist() {
       setError(null);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Could not update blocked websites. Try again.'
+        err instanceof Error ? err.message : 'Could not update blocked websites. Try again.'
       );
     }
   }, []);

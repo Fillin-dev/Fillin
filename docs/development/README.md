@@ -40,6 +40,8 @@ The root command builds the shared package and extension before launching Playwr
 
 The suite covers popup creation and persistence, typed expansion in inputs and textareas, cursor placement in the middle of text, multiline snippets, password-field exclusion, plain and formatted contenteditable insertion, simultaneous saves from two separate extension windows, and statistics updates from different website origins. Storage and messaging use the browser's real extension APIs; no content script is injected manually and no adapters are mocked. Third-party editor integrations such as Google Docs still need manual site-specific checks.
 
+Toolbar sizing is checked separately with `chrome.action.openPopup()` and no emulated viewport. These tests inspect the actual popup through Chrome's debugging interface because toolbar popups are not exposed as Playwright pages. Do not replace them with a fixed-size window: that hides popup auto-sizing failures. The document needs intrinsic dimensions before the content can adapt to Chrome's available height.
+
 To watch the browser after building, or inspect the most recent report:
 
 ```bash

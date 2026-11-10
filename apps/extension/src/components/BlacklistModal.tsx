@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, ShieldAlert, X, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { Dialog } from './Dialog';
 
 interface Props {
   error?: string | null;
@@ -8,9 +9,9 @@ interface Props {
   blacklistedDomains: string[];
   currentDomain: string | null;
   isCurrentDomainBlacklisted: boolean;
-  onToggleCurrentDomain: () => void;
-  onAddDomain: (d: string) => void;
-  onRemoveDomain: (d: string) => void;
+  onToggleCurrentDomain: () => void | Promise<void>;
+  onAddDomain: (domain: string) => void | boolean | Promise<void | boolean>;
+  onRemoveDomain: (domain: string) => void | Promise<void>;
 }
 
 export function BlacklistModal({
@@ -25,140 +26,150 @@ export function BlacklistModal({
   onRemoveDomain,
 }: Props) {
   const [newDomain, setNewDomain] = useState('');
-
+  const [busy, setBusy] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   if (!isOpen) return null;
-
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newDomain.trim()) {
-      onAddDomain(newDomain.trim());
-      setNewDomain('');
+  const run = async (action: () => Promise<void>) => {
+    setBusy(true);
+    setLocalError(null);
+    try {
+      await action();
+    } catch (err) {
+      setLocalError(
+        err instanceof Error ? err.message : 'Could not update site settings. Try again.'
+      );
+    } finally {
+      setBusy(false);
     }
   };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden max-h-[90vh]">
-        {error && <p role="alert" className="p-3 text-xs text-red-600 bg-red-50">{error}</p>}
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-gray-700" />
-            <h3 className="text-sm font-bold text-gray-900">Site Blacklist</h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="p-4 space-y-4 overflow-y-auto">
-          {/* Active Site Card */}
-          {currentDomain && (
-            <div
-              className={`p-3 rounded-xl border transition-all ${
-                isCurrentDomainBlacklisted
-                  ? 'bg-amber-50/70 border-amber-200 text-amber-900'
-                  : 'bg-gray-50 border-gray-200 text-gray-800'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center space-x-1.5">
-                    {isCurrentDomainBlacklisted ? (
-                      <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-                    ) : (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    )}
-                    <span className="text-xs font-semibold">{currentDomain}</span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
-                    {isCurrentDomainBlacklisted ? 'Fillin is paused on this site' : 'Fillin is active on this site'}
-                  </p>
-                </div>
-
-                <button
-                  onClick={onToggleCurrentDomain}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all shadow-xs ${
-                    isCurrentDomainBlacklisted
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                      : 'bg-gray-900 hover:bg-black text-white'
-                  }`}
-                >
-                  {isCurrentDomainBlacklisted ? 'Resume' : 'Pause'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Add Domain Input */}
-          <form onSubmit={handleAdd} className="space-y-1.5">
-            <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-              Add Blocked Domain
-            </label>
-            <div className="flex space-x-1.5">
-              <input
-                type="text"
-                placeholder="e.g. chase.com, bank.org"
-                value={newDomain}
-                onChange={(e) => setNewDomain(e.target.value)}
-                className="flex-1 px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400
-                           focus:bg-white focus:border-gray-400 focus:ring-2 focus:ring-gray-100 outline-none"
-              />
-              <button
-                type="submit"
-                disabled={!newDomain.trim()}
-                className="px-3 py-1.5 text-xs font-semibold bg-gray-900 text-white rounded-xl hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center space-x-1"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Add</span>
-              </button>
-            </div>
-          </form>
-
-          {/* Blocked Domains List */}
+    <Dialog
+      titleId="sites-heading"
+      onClose={() => {
+        if (!busy) onClose();
+      }}
+    >
+      <header className="dialog-header">
+        <div className="flex items-center gap-2">
+          <Shield size={18} className="text-blue-600" />
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                Blocked Websites ({blacklistedDomains.length})
-              </span>
-            </div>
-
-            {blacklistedDomains.length === 0 ? (
-              <p className="text-xs text-gray-400 italic py-2 text-center bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                No websites blacklisted. Fillin runs everywhere.
-              </p>
-            ) : (
-              <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
-                {blacklistedDomains.map((domain) => (
-                  <div
-                    key={domain}
-                    className="flex items-center justify-between px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs"
-                  >
-                    <span className="font-mono text-gray-800">{domain}</span>
-                    <button
-                      onClick={() => onRemoveDomain(domain)}
-                      className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
-                      title={`Unblock ${domain}`}
-                      aria-label={`Unblock ${domain}`}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <h2 id="sites-heading">Site settings</h2>
+            <p>Choose where Fillin can expand.</p>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 text-[11px] text-gray-400 text-center">
-          Fillin will stay silent and inactive on all blacklisted domains.
+        <button className="icon-button" onClick={onClose} disabled={busy} aria-label="Close">
+          <X size={17} />
+        </button>
+      </header>
+      <div className="dialog-scroll">
+        {(error || localError) && (
+          <p role="alert" className="form-error">
+            {error || localError}
+          </p>
+        )}
+        {currentDomain && (
+          <div className="site-status-card" data-paused={isCurrentDomainBlacklisted}>
+            <div>
+              {isCurrentDomainBlacklisted ? <ShieldAlert size={17} /> : <CheckCircle2 size={17} />}
+              <strong>{currentDomain}</strong>
+            </div>
+            <p>
+              {isCurrentDomainBlacklisted
+                ? 'Expansion is paused on this site.'
+                : 'Fillin is active on this site.'}
+            </p>
+            <button
+              className="popup-secondary"
+              disabled={busy}
+              onClick={() =>
+                void run(async () => {
+                  await onToggleCurrentDomain();
+                })
+              }
+            >
+              {isCurrentDomainBlacklisted ? 'Resume' : 'Pause'}
+            </button>
+          </div>
+        )}
+        <form
+          className="form-field"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!newDomain.trim() || busy) return;
+            try {
+              const raw = newDomain.trim();
+              const url = new URL(raw.includes('://') ? raw : 'https://' + raw);
+              if (
+                !['http:', 'https:'].includes(url.protocol) ||
+                !url.hostname ||
+                /\s/.test(raw) ||
+                url.username ||
+                url.password
+              )
+                throw new Error();
+            } catch {
+              setLocalError('Enter a website domain, such as example.com.');
+              return;
+            }
+            void run(async () => {
+              const success = await onAddDomain(newDomain.trim());
+              if (success !== false) setNewDomain('');
+            });
+          }}
+        >
+          <label htmlFor="blocked-domain">Block a website</label>
+          <div className="domain-input-row">
+            <input
+              id="blocked-domain"
+              className="popup-input"
+              type="text"
+              inputMode="url"
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder="e.g. chase.com, bank.org"
+              value={newDomain}
+              onChange={(event) => setNewDomain(event.target.value)}
+              disabled={busy}
+            />
+            <button type="submit" className="popup-primary" disabled={!newDomain.trim() || busy}>
+              <Plus size={15} />
+              Add
+            </button>
+          </div>
+          <p className="field-help">Subdomains are included, such as mail.example.com.</p>
+        </form>
+        <div>
+          <div className="blocked-list-heading">
+            <h3>Blocked websites</h3>
+            <span>{blacklistedDomains.length}</span>
+          </div>
+          {!blacklistedDomains.length ? (
+            <div className="blocked-empty">No blocked websites yet.</div>
+          ) : (
+            <ul className="blocked-list">
+              {blacklistedDomains.map((domain) => (
+                <li key={domain}>
+                  <span>{domain}</span>
+                  <button
+                    className="icon-button danger-icon"
+                    disabled={busy}
+                    title={'Unblock ' + domain}
+                    aria-label={'Unblock ' + domain}
+                    onClick={() =>
+                      void run(async () => {
+                        await onRemoveDomain(domain);
+                      })
+                    }
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
-    </div>
+      <footer className="dialog-footer">Paused sites keep their normal typing behavior.</footer>
+    </Dialog>
   );
 }

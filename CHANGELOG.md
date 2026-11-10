@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.5] - 2026-11-10
+
+- Fix the collapsed toolbar popup by giving its document an explicit width and intrinsic height, while fitting the content to the height Chrome provides.
+- Add regression checks that open the real toolbar popup without an emulated viewport, covering first-use guidance, the saved library, and the editor's Save button.
+
+## [0.0.4] - 2026-11-07
+
+- Redesign the extension popup with a clearer library, labeled backup tools, visible edit and delete actions, readable rich-text previews, and improved search and tag filtering.
+- Keep Save visible while editing, improve shortcut validation and field labels, and preserve the popup during successful saves.
+- Add keyboard-safe dialogs with focus restoration, validate site-setting input, and preserve entered domains when a save fails.
+- Refresh the first-use guide styling and add installed-browser checks for the redesigned library, editor, dialogs, and site settings.
+
 ## [0.0.3] - 2026-11-07
 
 - Guide new users through creating a shortcut, practicing expansion with correct cursor placement, and exporting a restorable JSON backup.
