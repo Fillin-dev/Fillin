@@ -115,19 +115,30 @@ for (const library of [false, true]) {
       headless,
       library,
       async (popup) => {
-        await expect
-          .poll(() =>
-            popup.evaluate(
-              `({ width: innerWidth, height: innerHeight, bodyWidth: document.body.getBoundingClientRect().width, bodyHeight: document.body.getBoundingClientRect().height })`
+        const expectPopupSize = async () => {
+          await expect
+            .poll(() =>
+              popup.evaluate(
+                `({ rootWidth: document.documentElement.getBoundingClientRect().width, bodyWidth: document.body.getBoundingClientRect().width })`
+              )
             )
-          )
-          .toMatchObject({ width: 400, bodyWidth: 400 });
-        const size = await popup.evaluate<{ height: number; bodyHeight: number }>(
-          `({ height: innerHeight, bodyHeight: document.body.getBoundingClientRect().height })`
-        );
-        expect(size.height).toBeGreaterThanOrEqual(320);
-        expect(size.height).toBeLessThanOrEqual(600);
-        expect(size.bodyHeight).toBe(size.height);
+            .toEqual({ rootWidth: 400, bodyWidth: 400 });
+          const size = await popup.evaluate<{
+            width: number;
+            height: number;
+            bodyHeight: number;
+          }>(
+            `({ width: innerWidth, height: innerHeight, bodyHeight: document.body.getBoundingClientRect().height })`
+          );
+          // Linux Chromium can reserve our 4px scrollbar beside the 400px document.
+          // Keep content sizing exact and reject either a clipped or oversized viewport.
+          expect(size.width).toBeGreaterThanOrEqual(400);
+          expect(size.width).toBeLessThanOrEqual(404);
+          expect(size.height).toBeGreaterThanOrEqual(320);
+          expect(size.height).toBeLessThanOrEqual(600);
+          expect(size.bodyHeight).toBe(size.height);
+        };
+        await expectPopupSize();
         await expect
           .poll(() =>
             popup.evaluate(
@@ -143,10 +154,11 @@ for (const library of [false, true]) {
           await expect
             .poll(() =>
               popup.evaluate(
-                `({ width: innerWidth, height: innerHeight, saveVisible: !!document.querySelector('.editor-footer button') && document.querySelector('.editor-footer button').getBoundingClientRect().bottom <= innerHeight })`
+                `!!document.querySelector('.editor-footer button') && document.querySelector('.editor-footer button').getBoundingClientRect().bottom <= innerHeight`
               )
             )
-            .toMatchObject({ width: 400, saveVisible: true });
+            .toBe(true);
+          await expectPopupSize();
           await popup.screenshot('toolbar-editor');
         }
       },
