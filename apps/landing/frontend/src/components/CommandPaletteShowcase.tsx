@@ -107,9 +107,11 @@ export const CommandPaletteShowcase = () => {
             <div className="palette-sample">
               Hey team, are you free tomorrow afternoon?{' '}
               {step === 5 ? (
-                <span className="palette-inserted">{snippets[0].content}</span>
+                <span key="inserted" className="palette-inserted">
+                  {snippets[0].content}
+                </span>
               ) : (
-                <span className="palette-caret" aria-hidden="true" />
+                <span key="caret" className="palette-caret" aria-hidden="true" />
               )}
             </div>
           </div>

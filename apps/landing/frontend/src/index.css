@@ -27,14 +27,14 @@
   --background: 45 29% 97%;
   --foreground: 220 40% 12%;
   --muted-foreground: 218 19% 35%;
-  --primary: 220 40% 12%;
+  --primary: 224 91% 55%;
   --primary-foreground: 0 0% 100%;
   --secondary: 40 67% 99%;
   --muted: 45 18% 94%;
-  --accent: 45 18% 94%;
+  --accent: 224 100% 96%;
   --border: 40 4% 86%;
   --input: 40 4% 86%;
-  --primary-hover: 220 30% 23%;
+  --primary-hover: 224 79% 45%;
 
   /* Resolved colors keep component styles and canvas consumers on the same contract. */
   --page: hsl(var(--background));
@@ -48,8 +48,12 @@
   --action-ink: hsl(var(--primary-foreground));
   --action-hover: hsl(var(--primary-hover));
   --accent-soft: hsl(var(--accent));
-  --accent-ink: hsl(var(--foreground));
+  --accent-ink: var(--blue-ink);
   --brand-blue: #2457f5;
+  --blue-ink: #234fc6;
+  --yellow-ink: #745000;
+  --yellow-soft: #fff5d4;
+  --yellow-line: #ead99f;
   --focus-ring: #2457f5;
   --horse-ink: hsl(var(--foreground));
   --horse-highlight: var(--brand-blue);
@@ -61,14 +65,18 @@
   --background: 201 100% 13%;
   --foreground: 0 0% 100%;
   --muted-foreground: 240 4% 66%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 4%;
+  --primary: 224 91% 55%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 10%;
   --muted: 0 0% 10%;
-  --accent: 0 0% 10%;
+  --accent: 210 60% 17%;
   --border: 0 0% 18%;
   --input: 0 0% 18%;
-  --primary-hover: 0 0% 88%;
+  --primary-hover: 224 79% 45%;
+  --blue-ink: #abcaff;
+  --yellow-ink: #f5ca45;
+  --yellow-soft: #302a17;
+  --yellow-line: #5d5024;
   --focus-ring: #abc2ff;
   --card-shadow: 0 8px 28px -16px rgb(0 0 0 / 45%);
 }
@@ -1191,7 +1199,7 @@
   .section-kicker {
     display: block;
     margin-bottom: 18px;
-    color: var(--text-muted);
+    color: var(--blue-ink);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.13em;
@@ -1236,6 +1244,10 @@
   .facts-row a:hover {
     text-decoration: underline;
   }
+  .facts-row a svg:first-child:not(:last-child) {
+    color: var(--yellow-ink);
+    fill: var(--highlight);
+  }
   .editorial-section {
     background: var(--page);
   }
@@ -1249,9 +1261,9 @@
     --line: #334658;
     --ink: #f5f7fb;
     --text-muted: #bfc8d5;
-    --action: #f3f5f7;
+    --action: #f5ca45;
     --action-ink: #111b25;
-    --action-hover: #dae2eb;
+    --action-hover: #ffdc67;
     --accent-ink: #f5f7fb;
     --accent-soft: #1b2d40;
     --focus-ring: #b9d4ff;
@@ -1265,6 +1277,20 @@
     color: var(--text-muted);
     font-size: 10px;
     letter-spacing: 0.04em;
+  }
+  .demo-editor .demo-live-label {
+    color: var(--highlight);
+  }
+  .editorial-section .serif-muted,
+  .palette-story .serif-muted,
+  .closing-section .serif-muted {
+    color: var(--blue-ink);
+  }
+  .playground-layout .keycap,
+  .step-item:last-child .keycap {
+    background: var(--yellow-soft);
+    border-color: var(--yellow-line);
+    color: var(--yellow-ink);
   }
   .demo-editor-header i,
   .demo-editor-header i:first-child {
@@ -1298,7 +1324,7 @@
   }
   .step-number {
     font: 400 40px/1 var(--font-display);
-    color: var(--text-muted);
+    color: var(--blue-ink);
     margin-bottom: 28px;
   }
   .step-item p {
@@ -1407,8 +1433,8 @@
   }
   .palette-inserted {
     display: inline;
-    background: var(--accent-soft);
-    color: var(--ink);
+    background: var(--yellow-soft);
+    color: var(--yellow-ink);
   }
   .palette-outcome {
     color: var(--text-muted);
@@ -1484,6 +1510,10 @@
     overflow: hidden;
     margin-top: 5px;
   }
+  .palette-result[data-selected='true'] .palette-result-content,
+  .palette-result[data-selected='true'] .palette-tags span {
+    opacity: 1;
+  }
   .palette-window-footer {
     display: flex;
     justify-content: space-between;
@@ -1526,7 +1556,7 @@
   }
   .palette-progress button[aria-current='step'] span {
     width: 17px;
-    background: var(--ink);
+    background: var(--brand-blue);
   }
   .capability-grid {
     display: grid;
@@ -1550,7 +1580,19 @@
   }
   .capability-icon {
     margin-bottom: 24px;
-    color: var(--text-muted);
+    color: var(--blue-ink);
+    background: var(--accent-soft);
+    padding: 10px;
+    box-sizing: content-box;
+    border-radius: 12px;
+  }
+  .capability-backup .capability-icon {
+    color: var(--yellow-ink);
+    background: var(--yellow-soft);
+  }
+  .capability-metric {
+    background: var(--yellow-soft);
+    border-color: var(--yellow-line);
   }
   .capability-card .muted-text {
     font-size: 14px;
@@ -1625,7 +1667,7 @@
     padding-bottom: 0;
   }
   .privacy-list svg {
-    color: var(--text-muted);
+    color: var(--blue-ink);
     margin-top: 2px;
   }
   .privacy-list .feature-title {
@@ -1662,6 +1704,7 @@
   }
   .faq-item[open] summary svg {
     transform: rotate(45deg);
+    color: var(--yellow-ink);
   }
   .faq-answer {
     color: var(--text-muted);

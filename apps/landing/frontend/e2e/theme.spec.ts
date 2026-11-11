@@ -52,9 +52,13 @@ async function expectReadable(locator: Locator) {
         .reduce((total, value, index) => total + value * [0.2126, 0.7152, 0.0722][index], 0);
     const foreground = luminance(rgba(getComputedStyle(element).color));
     const backdrop = luminance(background);
-    return (Math.max(foreground, backdrop) + 0.05) / (Math.min(foreground, backdrop) + 0.05);
+    return {
+      value: (Math.max(foreground, backdrop) + 0.05) / (Math.min(foreground, backdrop) + 0.05),
+      color: getComputedStyle(element).color,
+      background,
+    };
   });
-  expect(ratio).toBeGreaterThanOrEqual(4.5);
+  expect(ratio.value, JSON.stringify(ratio)).toBeGreaterThanOrEqual(4.5);
 }
 
 test('follows the system until overridden, remembers the choice, and restores automatic mode', async ({
@@ -165,6 +169,11 @@ for (const width of [320, 390, 768, 1440]) {
       const editor = page.getByRole('textbox');
       await expectReadable(editor);
       await expectReadable(page.getByRole('button', { name: 'Expand shortcut', exact: true }));
+      await expectReadable(page.locator('.editorial-section .section-kicker'));
+      await expectReadable(page.locator('.editorial-section .serif-muted'));
+      await expectReadable(page.getByLabel('Demo keystrokes saved'));
+      await expectReadable(page.locator('.capability-metric .muted-text'));
+      await expectReadable(page.locator('.closing-section .button-primary'));
       await expect(page.getByLabel('Demo keystrokes saved')).toHaveText('0');
       await editor.fill('/em1');
       await editor.press('Control+Space');
@@ -174,11 +183,15 @@ for (const width of [320, 390, 768, 1440]) {
       if (await pauseTour.isVisible()) await pauseTour.click();
       await page.getByRole('button', { name: 'Jump to animation step 5' }).click();
       await expect(page.getByText('meet', { exact: true })).toBeVisible();
+      await expectReadable(page.locator('.palette-result[data-selected="true"]'));
+      await page.getByRole('button', { name: 'Jump to animation step 6' }).click();
+      await expectReadable(page.locator('.palette-inserted'));
       await page.getByRole('button', { name: '#dev', exact: true }).click();
       await expect(page.getByRole('button', { name: '#dev', exact: true })).toHaveAttribute(
         'aria-pressed',
         'true'
       );
+      await expectReadable(page.getByRole('button', { name: '#dev', exact: true }));
       const preview = page.getByRole('button', { name: 'Preview /pr shortcut', exact: true });
       await expect(preview).toHaveAttribute('aria-expanded', 'true');
       await expect(preview.getByText('LGTM! Merged to main branch', { exact: true })).toHaveCSS(

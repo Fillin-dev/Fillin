@@ -230,3 +230,10 @@ Phases 1–3 are complete in the local working tree.
 ### Phase 6: publishing
 
 The user explicitly authorized pushing the completed redesign to GitHub and deploying it to the existing Vercel production project. Publish the tested frontend build, then verify the public homepage, installation route, media, and downloadable archive against the local release.
+
+### Follow-up: carry the film's palette through the page
+
+- Added blue actions, links, section labels, step numbers, selected tags, and feature icons, with lighter blue text for dark surfaces.
+- Added warm yellow to the live-demo action, keyboard hints, backup detail, inserted text, and keystroke card. Retained the neutral page surfaces and cinematic hero.
+- Extended the existing light/dark responsive checks to cover contrast for colored headings, selected controls, highlighted text, counters, and the final download.
+- Gave the tour cursor and inserted phrase distinct element identities so a step change cannot retain cursor styling on the message text.
