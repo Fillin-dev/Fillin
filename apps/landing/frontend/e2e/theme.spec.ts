@@ -2,6 +2,9 @@ import { test, expect, type Page, type Locator } from '@playwright/test';
 
 // The theme checks never depend on external avatar or GitHub requests.
 test.beforeEach(async ({ context }) => {
+  // Exercise the system-font fallback without depending on Google Fonts availability in CI.
+  await context.route('https://fonts.googleapis.com/**', (route) => route.abort());
+  await context.route('https://fonts.gstatic.com/**', (route) => route.abort());
   await context.route('https://api.github.com/**', (route) =>
     route.fulfill({ json: { stargazers_count: 42 } })
   );
@@ -145,7 +148,13 @@ for (const width of [320, 390, 768, 1440]) {
       await page.emulateMedia({ colorScheme });
       await page.goto('/');
       await expectTheme(page, colorScheme === 'dark');
+      const themeChooser = page.getByRole('button', { name: 'Choose color theme' });
+      if (width < 640) await themeChooser.click();
       await expect(page.getByRole('radiogroup', { name: 'Color theme' })).toBeInViewport();
+      if (width < 640) {
+        await page.keyboard.press('Escape');
+        await expect(themeChooser).toBeFocused();
+      }
       await expect(page.getByRole('link', { name: 'Star Fillin on GitHub' })).toBeInViewport();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)
@@ -154,12 +163,15 @@ for (const width of [320, 390, 768, 1440]) {
       await expectReadable(page.getByRole('link', { name: /Download Fillin/ }).first());
       await page.screenshot({ path: testInfo.outputPath('home.png'), fullPage: true });
       const editor = page.getByRole('textbox');
+      await expectReadable(editor);
+      await expectReadable(page.getByRole('button', { name: 'Expand shortcut', exact: true }));
       await expect(page.getByLabel('Demo keystrokes saved')).toHaveText('0');
       await editor.fill('/em1');
       await editor.press('Control+Space');
       await expect(editor).toHaveValue('vishal@example.com');
       await expect(page.getByLabel('Demo keystrokes saved')).toHaveText('14');
-      await page.getByTitle('Pause animation', { exact: true }).click();
+      const pauseTour = page.getByTitle('Pause animation', { exact: true });
+      if (await pauseTour.isVisible()) await pauseTour.click();
       await page.getByRole('button', { name: 'Jump to animation step 5' }).click();
       await expect(page.getByText('meet', { exact: true })).toBeVisible();
       await page.getByRole('button', { name: '#dev', exact: true }).click();
@@ -214,11 +226,13 @@ test('previews shortcut text with hover and keyboard focus without affecting dem
   page,
 }) => {
   await page.goto('/');
-  const preview = page.getByRole('button', { name: 'Preview /email shortcut', exact: true });
+  const preview = page.getByRole('button', { name: 'Preview /thanks shortcut', exact: true });
   await expect(preview).toHaveAttribute('aria-expanded', 'false');
   await preview.hover();
   await expect(preview).toHaveAttribute('aria-expanded', 'true');
-  await expect(preview.getByText('hello@example.com', { exact: true })).toHaveCSS('opacity', '1');
+  await expect(
+    preview.getByText('Thanks for your help. I really appreciate it!', { exact: true })
+  ).toHaveCSS('opacity', '1');
   await page.mouse.move(0, 0);
   await expect(preview).toHaveAttribute('aria-expanded', 'false');
   await preview.focus();

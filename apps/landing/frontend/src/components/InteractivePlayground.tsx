@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { detectTrigger, replaceTrigger } from '@fillin/shared';
-import { ArrowUpRight, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowUpRight, RotateCcw } from 'lucide-react';
 
 const initialText = 'Hey team,\n\nYou can reach me at /em1';
 const trigger = '/em1';
@@ -40,18 +40,19 @@ export const InteractivePlayground = ({ onExpand }: { onExpand: (saved: number) 
   };
 
   return (
-    <section id="playground" className="section-band">
+    <section id="playground" className="editorial-section">
       <div className="section-shell section-space playground-layout">
         <div>
-          <p className="eyebrow mb-3">Go on. Try it.</p>
+          <p className="section-kicker">Try it for yourself</p>
           <h2 className="section-title">
-            A few characters.
-            <br />A complete thought.
+            A little typing.
+            <br />
+            <span className="serif-muted">A lot to say.</span>
           </h2>
           <p className="section-description mt-5">
-            Put your cursor after <code className="inline-code">/em1</code> and press{' '}
+            Place your cursor after <code className="inline-code">/em1</code> and press{' '}
             <kbd className="keycap">Ctrl</kbd> + <kbd className="keycap">Space</kbd>. Or use the
-            button.
+            button below.
           </p>
           <p className="muted-text text-sm mt-4">
             No installation needed. This example stays on this page.
@@ -64,8 +65,8 @@ export const InteractivePlayground = ({ onExpand }: { onExpand: (saved: number) 
               <i />
               <i />
             </span>
-            <span className="font-mono text-xs muted-text">your-next-message.txt</span>
-            <Sparkles size={16} className="accent-text" aria-hidden="true" />
+            <span className="demo-document-title">Your next message</span>
+            <span className="demo-live-label">Live demo</span>
           </div>
           <label htmlFor="playground-text" className="sr-only">
             Try shortcut expansion

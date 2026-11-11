@@ -11,9 +11,7 @@ export const InstallPage = () => {
 
       <main className="max-w-3xl mx-auto px-4 pt-28 pb-16 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-black text-gray-900 dark:text-gray-100 mb-4 tracking-tight">
-            How to Install Fillin
-          </h1>
+          <h1 className="display-title text-4xl mb-4">How to Install Fillin</h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Follow these 3 simple steps to load the extension directly into Chrome.
           </p>
@@ -22,11 +20,11 @@ export const InstallPage = () => {
         <div className="space-y-8">
           {/* Step 1 */}
           <div className="surface-card p-6 sm:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
-            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-black text-2xl">
+            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-medium text-2xl">
               1
             </div>
             <div className="flex-grow">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
                 Extract the downloaded .zip
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -45,22 +43,22 @@ export const InstallPage = () => {
 
           {/* Step 2 */}
           <div className="surface-card p-6 sm:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
-            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-black text-2xl">
+            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-medium text-2xl">
               2
             </div>
             <div className="flex-grow">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
                 Open Chrome Extensions
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Open a new tab in Chrome, type{' '}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm text-gray-900 dark:text-gray-100 font-bold select-all">
+                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm text-gray-900 dark:text-gray-100 font-medium select-all">
                   chrome://extensions
                 </code>{' '}
                 in the address bar, and press Enter.
               </p>
               <div className="flex items-center gap-3">
-                <div className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-semibold border border-[var(--line)]">
+                <div className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium border border-[var(--line)]">
                   Developer mode
                 </div>
                 <span className="text-gray-600 dark:text-gray-300 text-sm">
@@ -72,11 +70,11 @@ export const InstallPage = () => {
 
           {/* Step 3 */}
           <div className="surface-card p-6 sm:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
-            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-black text-2xl">
+            <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent-soft)] text-[var(--accent-ink)] rounded-full flex items-center justify-center font-medium text-2xl">
               3
             </div>
             <div className="flex-grow">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
                 Load the Unpacked Extension
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -86,7 +84,7 @@ export const InstallPage = () => {
               <div className="bg-gray-900 text-white p-4 rounded-xl flex items-center gap-4">
                 <Puzzle className="w-8 h-8 text-yellow-400" />
                 <div>
-                  <div className="font-bold">You're all set!</div>
+                  <div className="font-medium">You're all set!</div>
                   <div className="text-sm text-gray-400">
                     Pin the Fillin icon in your browser toolbar to get started.
                   </div>

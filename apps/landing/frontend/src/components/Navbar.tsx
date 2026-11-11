@@ -1,191 +1,37 @@
 import React from 'react';
 import { PRODUCT_NAME } from '@fillin/shared';
 import { ThemeControl } from './ThemeControl';
+import { DownloadLink } from './DownloadButtons';
 
-export const Navbar = () => {
-  return (
-    <nav className="site-navbar fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
-      <div className="section-shell">
-        <div className="flex justify-between items-center h-16">
-          <a href="/#top" aria-label="Fillin home" className="flex items-center space-x-2 rounded-lg">
-            <img src="/logo.svg" alt="" className="w-8 h-8 dark:invert" />
-            <span className="font-bold text-xl text-gray-900 dark:text-gray-100 tracking-tight">
-              {PRODUCT_NAME}
-            </span>
+export const Navbar = ({ cinematic = false }: { cinematic?: boolean }) => (
+  <nav aria-label="Primary" className={cinematic ? 'cinematic-navbar' : 'site-navbar page-navbar'}>
+    <div className={cinematic ? 'cinematic-nav-shell' : 'section-shell'}>
+      <div className="nav-row">
+        <a href="/#top" aria-label="Fillin home" className="nav-brand">
+          <img src="/logo.svg" alt="" className="nav-logo dark:invert" />
+          <span className="brand-wordmark">{PRODUCT_NAME}</span>
+        </a>
+        <div className="nav-links">
+          <a href="/#how-it-works">How it works</a>
+          <a href="/#features">Features</a>
+          <a href="/#privacy">Privacy</a>
+        </div>
+        <div className="nav-actions">
+          <ThemeControl compact={cinematic} />
+          <a
+            href="https://github.com/Fillin-dev/Fillin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cinematic ? 'nav-github liquid-glass' : 'nav-github'}
+            aria-label="Star Fillin on GitHub"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.66-.31-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 24 12C24 5.37 18.63 0 12 0Z" />
+            </svg>
           </a>
-          <div className="hidden lg:flex items-center space-x-8">
-            <a
-              href="#how-it-works"
-              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              How it works
-            </a>
-            <a
-              href="#features"
-              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#privacy"
-              className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              Privacy
-            </a>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeControl />
-            <GitHubStarButton />
-          </div>
+          {cinematic && <DownloadLink variant="nav" />}
         </div>
       </div>
-    </nav>
-  );
-};
-
-const GitHubStarButton = () => {
-  return (
-    <>
-      <style>{`
-        @keyframes starPop {
-          0%   { transform: scale(1) rotate(0deg); }
-          30%  { transform: scale(1.5) rotate(-20deg); }
-          60%  { transform: scale(0.9) rotate(12deg); }
-          100% { transform: scale(1.2) rotate(0deg); }
-        }
-        @keyframes shimmer {
-          0%   { left: -60%; }
-          100% { left: 130%; }
-        }
-        @keyframes glow-pulse {
-          0%, 100% { box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
-          50%       { box-shadow: 0 0 0 5px rgba(245,158,11,0.25); }
-        }
-        .gh-star-btn {
-          position: relative;
-          overflow: hidden;
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          padding: 7px 16px;
-          border-radius: 9999px;
-          border: 1.5px solid var(--gh-border, #e5e7eb);
-          background: var(--gh-bg, #ffffff);
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--gh-text, #111827);
-          text-decoration: none;
-          cursor: pointer;
-          transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-          white-space: nowrap;
-          user-select: none;
-        }
-        .gh-star-btn:hover {
-          border-color: #f59e0b;
-          background: var(--gh-hover, #fffbeb);
-          animation: glow-pulse 1.2s ease-in-out infinite;
-        }
-        .gh-star-icon-star {
-          width: 15px;
-          height: 15px;
-          flex-shrink: 0;
-          color: #9ca3af;
-          transition: color 0.2s;
-        }
-        .gh-star-btn:hover .gh-star-icon-star {
-          animation: starPop 0.5s cubic-bezier(.36,.07,.19,.97) both;
-          color: #f59e0b;
-        }
-        .gh-star-btn::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -60%;
-          width: 40%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
-          transform: skewX(-20deg);
-          pointer-events: none;
-        }
-        .gh-star-btn:hover::after {
-          animation: shimmer 0.55s ease forwards;
-        }
-        .gh-logo-icon {
-          width: 15px;
-          height: 15px;
-          flex-shrink: 0;
-          color: inherit;
-        }
-        .gh-divider {
-          width: 1px;
-          height: 14px;
-          background: var(--gh-border, #e5e7eb);
-          margin: 0 1px;
-        }
-        .gh-count {
-          font-size: 12px;
-          color: var(--gh-muted, #6b7280);
-          font-weight: 500;
-          transition: color 0.2s;
-          letter-spacing: 0.01em;
-        }
-        .gh-star-btn:hover .gh-count {
-          color: #d97706;
-        }
-        .gh-label {
-          transition: color 0.2s;
-        }
-        .gh-star-btn:hover .gh-label {
-          color: var(--gh-hover-text, #92400e);
-        }
-        .dark .gh-star-btn {
-          --gh-border: var(--line);
-          --gh-bg: var(--panel);
-          --gh-text: var(--ink);
-          --gh-muted: var(--muted);
-          --gh-hover: var(--accent-soft);
-          --gh-hover-text: var(--accent-ink);
-        }
-        .gh-star-btn {
-          --gh-border: var(--line);
-          --gh-bg: var(--panel);
-          --gh-text: var(--ink);
-          --gh-muted: var(--muted);
-          --gh-hover: var(--accent-soft);
-          --gh-hover-text: var(--accent-ink);
-        }
-        @media (max-width: 639px) {
-          .gh-star-btn { padding: 8px 12px; }
-          .gh-count, .gh-divider, .gh-star-icon-star { display: none; }
-        }
-      `}</style>
-
-      <a
-        href="https://github.com/vishalsingh-data/Fillin"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="gh-star-btn"
-        aria-label="Star Fillin on GitHub"
-      >
-        {/* GitHub Logo */}
-        <svg viewBox="0 0 16 16" fill="currentColor" className="gh-logo-icon" aria-hidden="true">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-        </svg>
-
-        {/* Star Icon (animates on hover) */}
-        <svg
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          className="gh-star-icon-star"
-          aria-hidden="true"
-        >
-          <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.873 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z" />
-        </svg>
-
-        <span className="gh-label">Star</span>
-        <span className="gh-divider" aria-hidden="true" />
-        <span className="gh-count">on GitHub</span>
-      </a>
-    </>
-  );
-};
+    </div>
+  </nav>
+);
