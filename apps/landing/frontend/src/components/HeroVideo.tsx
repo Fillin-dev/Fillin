@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pause, Play } from 'lucide-react';
 
 export const HERO_VIDEO_SRC =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4';
@@ -11,16 +10,8 @@ type DataConnection = Partial<Pick<EventTarget, 'addEventListener' | 'removeEven
 export const HeroVideo = () => {
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const syncRef = useRef<() => void>();
-  const manualPause = useRef(false);
-  const [playing, setPlaying] = useState(false);
   const [hasFrame, setHasFrame] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [limitedMotion, setLimitedMotion] = useState(
-    () =>
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      !!(navigator as Navigator & { connection?: DataConnection }).connection?.saveData
-  );
 
   useEffect(() => {
     const video = videoRef.current!;
@@ -29,18 +20,22 @@ export const HeroVideo = () => {
     let disposed = false;
     let visible = false;
     let mediaFailed = false;
+    let waitingForGesture = false;
     const limited = () => motion.matches || !!connection?.saveData;
-    const shouldPlay = () =>
-      !disposed &&
-      visible &&
-      !document.hidden &&
-      !limited() &&
-      !manualPause.current &&
-      !mediaFailed;
+    const shouldPlay = () => !disposed && visible && !document.hidden && !limited() && !mediaFailed;
+    const stopGestureRetry = () => {
+      waitingForGesture = false;
+      document.removeEventListener('pointerdown', retryPlayback);
+      document.removeEventListener('keydown', retryPlayback);
+    };
+    const retryPlayback = () => {
+      if (shouldPlay()) sync();
+    };
 
     const sync = () => {
       if (disposed) return;
       if (!shouldPlay()) {
+        stopGestureRetry();
         video.pause();
         // Cancel buffering when a visitor switches to reduced motion or data saving.
         if (limited() && video.hasAttribute('src')) {
@@ -60,24 +55,24 @@ export const HeroVideo = () => {
           if (!shouldPlay()) video.pause();
         })
         .catch(() => {
-          // A pause during loading cancels play; autoplay denial leaves a working play button.
-          if (shouldPlay()) setPlaying(false);
+          // Some browsers require an interaction even for muted autoplay.
+          if (shouldPlay() && !waitingForGesture) {
+            waitingForGesture = true;
+            document.addEventListener('pointerdown', retryPlayback, { passive: true });
+            document.addEventListener('keydown', retryPlayback);
+          }
         });
     };
     const preferencesChanged = () => {
-      setLimitedMotion(limited());
       sync();
     };
     const onPlaying = () => {
+      stopGestureRetry();
       if (!shouldPlay()) {
         video.pause();
         return;
       }
-      setPlaying(true);
       setHasFrame(true);
-    };
-    const onPause = () => {
-      if (!disposed) setPlaying(false);
     };
     const onLoaded = () => {
       if (!disposed && video.readyState >= 2 && !limited()) setHasFrame(true);
@@ -95,10 +90,8 @@ export const HeroVideo = () => {
       },
       { threshold: 0.01 }
     );
-    syncRef.current = sync;
     observer.observe(mediaRef.current!);
     video.addEventListener('playing', onPlaying);
-    video.addEventListener('pause', onPause);
     video.addEventListener('loadeddata', onLoaded);
     video.addEventListener('error', onError);
     motion.addEventListener('change', preferencesChanged);
@@ -107,10 +100,9 @@ export const HeroVideo = () => {
 
     return () => {
       disposed = true;
-      syncRef.current = undefined;
+      stopGestureRetry();
       observer.disconnect();
       video.removeEventListener('playing', onPlaying);
-      video.removeEventListener('pause', onPause);
       video.removeEventListener('loadeddata', onLoaded);
       video.removeEventListener('error', onError);
       motion.removeEventListener('change', preferencesChanged);
@@ -123,43 +115,28 @@ export const HeroVideo = () => {
   }, []);
 
   return (
-    <>
-      <div ref={mediaRef} className="cinematic-media" aria-hidden="true">
-        <img
-          src={POSTER}
-          width="1600"
-          height="894"
-          alt=""
-          fetchPriority="high"
-          className="cinematic-poster"
-        />
-        <video
-          ref={videoRef}
-          className="cinematic-video"
-          data-ready={hasFrame && !failed}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-          poster={POSTER}
-          disablePictureInPicture
-          tabIndex={-1}
-        />
-      </div>
-      {!limitedMotion && !failed && (
-        <button
-          type="button"
-          className="cinematic-playback liquid-glass"
-          aria-label={playing ? 'Pause background video' : 'Play background video'}
-          onClick={() => {
-            manualPause.current = playing;
-            syncRef.current?.();
-          }}
-        >
-          {playing ? <Pause size={15} aria-hidden="true" /> : <Play size={15} aria-hidden="true" />}
-        </button>
-      )}
-    </>
+    <div ref={mediaRef} className="cinematic-media" aria-hidden="true">
+      <img
+        src={POSTER}
+        width="1600"
+        height="894"
+        alt=""
+        fetchPriority="high"
+        className="cinematic-poster"
+      />
+      <video
+        ref={videoRef}
+        className="cinematic-video"
+        data-ready={hasFrame && !failed}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="none"
+        poster={POSTER}
+        disablePictureInPicture
+        tabIndex={-1}
+      />
+    </div>
   );
 };
