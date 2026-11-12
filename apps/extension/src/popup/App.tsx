@@ -11,6 +11,7 @@ import { BlacklistModal } from '../components/BlacklistModal';
 import { FirstUseGuide } from '../components/FirstUseGuide';
 import { SuggestionToggle } from '../components/SuggestionToggle';
 import { Plus, Zap } from 'lucide-react';
+import { openMediaEditor } from '../media/openMediaEditor';
 
 export function App() {
   const {
@@ -42,6 +43,18 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isBlacklistModalOpen, setIsBlacklistModalOpen] = useState(false);
+  const [mediaError, setMediaError] = useState('');
+
+  const openImage = async (id?: string) => {
+    setMediaError('');
+    try {
+      await openMediaEditor(id);
+    } catch (error) {
+      setMediaError(
+        error instanceof Error ? error.message : 'Could not open the image editor. Try again.'
+      );
+    }
+  };
 
   const pendingDeleteSnippet = snippets.find((s) => s.id === pendingDeleteId);
 
@@ -51,13 +64,23 @@ export function App() {
   };
 
   const handleEdit = (snippet: Snippet) => {
+    if (snippet.kind === 'media') {
+      void openImage(snippet.id);
+      return;
+    }
     setEditingSnippet(snippet);
     setView('form');
   };
 
   const handleDelete = (id: string) => setPendingDeleteId(id);
 
-  const handleSave = async (trigger: string, content: string, isHtml: boolean, tags?: string[], template?: TemplateOptions) => {
+  const handleSave = async (
+    trigger: string,
+    content: string,
+    isHtml: boolean,
+    tags?: string[],
+    template?: TemplateOptions
+  ) => {
     if (editingSnippet) {
       await updateSnippet(editingSnippet.id, trigger, content, isHtml, tags, template);
     } else {
@@ -128,6 +151,7 @@ export function App() {
                 setSearchQuery={setSearchQuery}
                 onLoadStarterPack={loadStarterPack}
                 onImport={importSnippets}
+                onChanged={reload}
                 onOpenBlacklistModal={() => setIsBlacklistModalOpen(true)}
                 currentDomain={currentDomain}
                 isCurrentDomainBlacklisted={isCurrentDomainBlacklisted}
@@ -147,19 +171,29 @@ export function App() {
                 <span>{formattedTimeSaved} saved</span>
               </div>
 
-              <button onClick={handleNew} className="popup-primary">
-                <Plus className="w-4 h-4" />
-                <span>Create Snippet</span>
-              </button>
+              <div className="library-create-actions">
+                <button onClick={handleNew} className="popup-primary">
+                  <Plus className="w-4 h-4" />
+                  <span>Create Snippet</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void openImage()}
+                  className="popup-secondary media-create-button"
+                  aria-label="Create image or GIF"
+                >
+                  Image / GIF
+                </button>
+              </div>
               <p className="expansion-hint">
                 Type a shortcut, then press <kbd>Ctrl + Space</kbd>
               </p>
             </footer>
 
             {/* Error toast */}
-            {(error || (!isBlacklistModalOpen && blacklistError)) && (
+            {(error || mediaError || (!isBlacklistModalOpen && blacklistError)) && (
               <div role="alert" className="app-error-banner">
-                {error || blacklistError}
+                {error || mediaError || blacklistError}
               </div>
             )}
 
@@ -167,6 +201,7 @@ export function App() {
             {pendingDeleteId && pendingDeleteSnippet && (
               <ConfirmDialog
                 trigger={pendingDeleteSnippet.trigger}
+                media={pendingDeleteSnippet.kind === 'media'}
                 onConfirm={handleConfirmDelete}
                 onCancel={() => setPendingDeleteId(null)}
               />

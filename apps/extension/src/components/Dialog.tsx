@@ -22,6 +22,7 @@ export function Dialog({
     const controls = () => Array.from(dialog.querySelectorAll<HTMLElement>(focusable));
     (dialog.querySelector<HTMLElement>('[data-dialog-initial]') || controls()[0] || dialog).focus();
     const handleKey = (event: KeyboardEvent) => {
+      if (event.isComposing) return;
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();

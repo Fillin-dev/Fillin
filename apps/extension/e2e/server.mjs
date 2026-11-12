@@ -16,6 +16,10 @@ const html = `<!doctype html>
 </body></html>`;
 
 const server = createServer((request, response) => {
+  if (request.url === '/restricted') {
+    response.setHeader('Content-Security-Policy', "img-src 'self';");
+    response.setHeader('Permissions-Policy', 'clipboard-write=()');
+  }
   response.setHeader(
     'Content-Type',
     request.url === '/health' ? 'text/plain' : 'text/html'

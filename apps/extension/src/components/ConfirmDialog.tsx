@@ -6,9 +6,10 @@ interface Props {
   trigger: string;
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
+  media?: boolean;
 }
 
-export function ConfirmDialog({ trigger, onConfirm, onCancel }: Props) {
+export function ConfirmDialog({ trigger, onConfirm, onCancel, media = false }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const close = () => {
@@ -22,8 +23,10 @@ export function ConfirmDialog({ trigger, onConfirm, onCancel }: Props) {
         </span>
         <h2 id="delete-heading">Delete snippet?</h2>
         <p>
-          <strong className="dialog-trigger">{trigger}</strong> will be permanently removed. Export
-          a backup first if you want to keep a copy.
+          <strong className="dialog-trigger">{trigger}</strong> will be permanently removed.{' '}
+          {media
+            ? 'Export a full ZIP backup from your library first if you want to keep this snippet and its original image.'
+            : 'Export a backup first if you want to keep a copy.'}
         </p>
         {error && (
           <p role="alert" className="form-error">

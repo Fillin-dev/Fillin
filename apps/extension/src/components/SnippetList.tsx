@@ -4,15 +4,14 @@ import {
   Search,
   Edit2,
   Trash2,
-  Download,
-  Upload,
   Sparkles,
   Shield,
   ShieldAlert,
   X,
   SlidersHorizontal,
 } from 'lucide-react';
-import { exportBackup } from '../utils/exportBackup';
+import { BackupControls } from './BackupControls';
+import { MediaThumbnail, MediaLibraryStatus } from './MediaThumbnail';
 
 interface Props {
   snippets: Snippet[];
@@ -26,9 +25,11 @@ interface Props {
   currentDomain?: string | null;
   isCurrentDomainBlacklisted?: boolean;
   onToggleCurrentDomain?: () => void;
+  onChanged?: () => Promise<void>;
 }
 
 function previewText(snippet: Snippet) {
+  if (snippet.kind === 'media') return snippet.caption || snippet.originalFilename;
   if (!snippet.isHtml) return snippet.content;
   // A detached template keeps HTML inert: previews never execute saved markup.
   const template = document.createElement('template');
@@ -49,11 +50,12 @@ export function SnippetList({
   currentDomain,
   isCurrentDomainBlacklisted,
   onToggleCurrentDomain,
+  onChanged,
 }: Props) {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [kind, setKind] = useState<'all' | 'text' | 'media'>('all');
   const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => () => clearTimeout(noticeTimer.current), []);
 
@@ -62,9 +64,14 @@ export function SnippetList({
   const query = searchQuery.trim().toLowerCase();
   const filtered = snippets.filter(
     (s) =>
+      (kind === 'all' || (kind === 'media' ? s.kind === 'media' : s.kind !== 'media')) &&
       (!query ||
         s.trigger.toLowerCase().includes(query) ||
         s.content.toLowerCase().includes(query) ||
+        (s.kind === 'media' &&
+          [s.caption, s.alt, s.originalFilename].some((value) =>
+            value.toLowerCase().includes(query)
+          )) ||
         s.tags?.some((tag) => tag.toLowerCase().includes(query))) &&
       (!activeTag || s.tags?.includes(activeTag))
   );
@@ -77,48 +84,7 @@ export function SnippetList({
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedTag(null);
-  };
-  const handleExport = () => {
-    try {
-      exportBackup(snippets);
-      showNotice('Backup download started. Check your Downloads folder.');
-    } catch (err) {
-      showNotice(
-        err instanceof Error ? err.message : 'Could not export your backup. Try again.',
-        true
-      );
-    }
-  };
-  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !onImport) return;
-    setBusy(true);
-    try {
-      let data: unknown;
-      try {
-        data = JSON.parse(await file.text());
-      } catch {
-        throw new Error('Choose a valid JSON backup file.');
-      }
-      if (!Array.isArray(data)) throw new Error('A backup must contain a list of snippets.');
-      const result = await onImport(data);
-      showNotice(
-        'Imported ' +
-          result.imported +
-          ', updated ' +
-          result.updated +
-          (result.skipped ? ', skipped ' + result.skipped : '') +
-          '.'
-      );
-    } catch (err) {
-      showNotice(
-        err instanceof Error ? err.message : 'Could not import this backup. Try again.',
-        true
-      );
-    } finally {
-      setBusy(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    setKind('all');
   };
 
   return (
@@ -133,37 +99,7 @@ export function SnippetList({
             </div>
           </div>
           <div className="library-tools">
-            {onImport && (
-              <>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImport}
-                  accept=".json,application/json"
-                  hidden
-                  aria-label="Choose snippet backup"
-                />
-                <button
-                  className="tool-button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={busy}
-                  title="Import snippets"
-                  aria-label="Import snippets from JSON"
-                >
-                  <Upload size={15} aria-hidden="true" />
-                  <span>Import</span>
-                </button>
-              </>
-            )}
-            <button
-              className="tool-button"
-              onClick={handleExport}
-              title="Export snippets"
-              aria-label="Export snippets to JSON"
-            >
-              <Download size={15} aria-hidden="true" />
-              <span>Export</span>
-            </button>
+            <BackupControls snippets={snippets} onNotice={showNotice} onLegacyImport={onImport} onChanged={onChanged} />
             {onOpenBlacklistModal && (
               <button
                 className="icon-button"
@@ -233,6 +169,21 @@ export function SnippetList({
         )}
       </header>
 
+      {snippets.some((snippet) => snippet.kind === 'media') && (
+        <div className="media-type-filters" role="group" aria-label="Filter snippet types">
+          {(['all', 'text', 'media'] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={kind === value}
+              onClick={() => setKind(value)}
+            >
+              {value === 'all' ? 'All' : value === 'text' ? 'Text' : 'Images & GIFs'}
+            </button>
+          ))}
+        </div>
+      )}
+
       {notice && (
         <div
           className={notice.error ? 'popup-notice is-error' : 'popup-notice'}
@@ -249,7 +200,7 @@ export function SnippetList({
         </div>
       )}
       <div className="library-caption">
-        <h1>{query || activeTag ? 'Filtered library' : 'Your library'}</h1>
+        <h1>{query || activeTag || kind !== 'all' ? 'Filtered library' : 'Your library'}</h1>
         <span>
           {filtered.length}
           {filtered.length !== snippets.length ? ' of ' + snippets.length : ''} snippet
@@ -257,6 +208,7 @@ export function SnippetList({
         </span>
       </div>
       <div className="library-scroll">
+        <MediaLibraryStatus snippets={snippets} />
         {filtered.length === 0 ? (
           <div className="library-empty">
             <div className="empty-icon">
@@ -330,7 +282,20 @@ export function SnippetList({
                     </button>
                   </div>
                 </div>
-                <p className="snippet-preview">{previewText(snippet)}</p>
+                {snippet.kind === 'media' ? (
+                  <div className="media-card-content">
+                    <MediaThumbnail snippet={snippet} />
+                    <div>
+                      <span className="media-format-badge">
+                        {snippet.mime === 'image/gif' ? 'GIF' : 'Image'}
+                      </span>
+                      <p className="snippet-preview">{previewText(snippet)}</p>
+                      <small>Open to edit & practise</small>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="snippet-preview">{previewText(snippet)}</p>
+                )}
                 {snippet.isHtml || snippet.tags?.length ? (
                   <div className="snippet-metadata">
                     {snippet.isHtml && <span className="rich-text-badge">Rich text</span>}

@@ -5,6 +5,7 @@ import { startNativeInline } from '../templates/InlineSession';
 import type { InlineTemplate } from '@fillin/shared';
 
 export class TextInputAdapter implements InputAdapter {
+  getTarget() { return this.element; }
   constructor(private element: HTMLInputElement | HTMLTextAreaElement) {}
 
   startInlineEditing(start: number, end: number, template: InlineTemplate, eligible: () => boolean) {

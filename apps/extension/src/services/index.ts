@@ -1,8 +1,4 @@
 import { SnippetService } from './SnippetService';
-import { ChromeStorageRepository } from '../storage/ChromeStorageRepository';
-import { WebStorageRepository } from '../storage/WebStorageRepository';
+import { snippetRepository } from '../storage/repository';
 
-const isChromeExtension = typeof chrome !== 'undefined' && chrome.storage;
-const repository = isChromeExtension ? new ChromeStorageRepository() : new WebStorageRepository();
-
-export const snippetService = new SnippetService(repository);
+export const snippetService = new SnippetService(snippetRepository);

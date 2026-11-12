@@ -32,13 +32,14 @@ Whether you're typing your email (`/email`), a canned customer support response 
 ##  Key Features
 
 -  **Instant Snippet Expansion**: Type your snippet trigger (e.g. `/email`) and hit `Ctrl + Space` to expand it inline.
+-  **Visual Snippets (0.2.0)**: Save local PNG, JPEG and GIF files with shortcuts, tags, captions and image descriptions. Try them in practice, preview before inserting into native rich-text fields, or explicitly copy/download for other editors. GIF originals retain animation. See [the visual-snippet guide](docs/product/visual-snippets.md) for supported destinations and limits.
 -  **Fill-In Templates (0.1.0)**: Enable **Use template values** for a plain-text snippet such as `Hi {{name}}, thanks for contacting {{company}}.` Expanding asks for each field once, previews the finished message, and inserts it after confirmation. Answers are not saved. Repeated names share one value; `{{date}}`, `{{time}}`, and `{{datetime}}` remain automatic. See [template usage and limits](docs/development/template-fields.md).
 -  **Cursor Placement (0.1.0)**: Add one `{{cursor}}` to an enabled plain-text template to choose where typing resumes, including before a signature or newline. Supported native fields and rich-text positions place the cursor after insertion; unsupported editors explain the limitation and offer clean copying. See [cursor placement](docs/development/cursor-placement.md).
 -  **Editable Placeholders (0.1.0)**: Enable **Edit fields after insertion** on a template to replace selected `‹name›` labels directly in supported text boxes. Tab/Shift+Tab move between independent occurrences; the last Tab finishes at the cursor marker or snippet end. Escape stops navigation while keeping edits. Other editors retain the fill-in dialog. See [inline editing and undo support](docs/development/inline-placeholders.md).
 -  **In-Page Command Palette**: Press `Ctrl + Shift + K` (or `Cmd + Shift + K` / `Cmd + /`) to summon a Raycast-style floating palette over any webpage, search across your entire snippet library, and insert with `Enter`.
 -  **Local Gamification (Keystrokes & Time Saved)**: Real-time counter displayed in the popup tracking total keystrokes and minutes saved—calculated and stored 100% locally.
 -  **Tags & Category Organization**: Categorize snippets with `#tags` (e.g., `#email`, `#work`, `#dev`) and filter your library with 1 click.
--  **1-Click JSON Portability & Starter Pack**: Instant local export and import for hassle-free backup, plus a pre-bundled starter pack with popular productivity shortcuts.
+-  **Portable Backups & Starter Pack**: Full ZIP backups include original images, GIFs and snippet metadata. Restore reviews conflicts and preserves existing shortcuts by default. Text-only JSON remains supported, alongside the starter text shortcuts.
 -  **Universal DOM & Canvas Adapters**:
   - **Standard Inputs & Textareas**: Full support for `<input>` and `<textarea>` elements.
   - **React-Controlled Fields**: Bypasses React's internal value setter override (`Object.getOwnPropertyDescriptor`) so synthetic events bubble naturally.
@@ -48,7 +49,7 @@ Whether you're typing your email (`/email`), a canned customer support response 
   - **Restricted Inputs**: Automatically handles cursor position calculation for HTML5 input types (`search`, `url`, `tel`).
 -  **Site Blacklist & 1-Click Pause Mode**: Instantly disable Fillin on sensitive websites (banking portals, internal tools, code sandboxes) with a single click in the popup, or manage custom blacklisted domains with automatic subdomain matching (`secure.chase.com` matches `chase.com`).
 -  **Snippet Duplicate Warning & Conflict Resolution**: Real-time visual conflict detection in the snippet editor that prevents exact duplicate triggers and warns on prefix overlaps (e.g., `/e` vs `/email`), providing clean clickable suggestions (`/email2`, `/myemail`).
--  **Zero Data Collection**: Saved snippets stay in `chrome.storage.local`; pending selections use temporary `chrome.storage.session` drafts. Fillin sends no typing data or keystrokes to a backend.
+-  **Zero Data Collection**: Saved snippet metadata stays in `chrome.storage.local`, media originals in local extension IndexedDB, and pending selections in temporary `chrome.storage.session` drafts. Fillin sends no typing data or keystrokes to a backend. Media explicitly previewed or inserted on a webpage is visible to that page.
 -  **Minimal Popup UI**: Sleek, modern monochromatic extension popup to create, edit, search, and manage shortcuts effortlessly.
 -  **Decoupled Monorepo Architecture**: Clean separation between the core shared engine, the extension, and the marketing landing app.
 
@@ -192,7 +193,7 @@ For a new version, run `pnpm release:version <version>`, refresh dependencies wi
 5.  **Fillin is ready!**
    - Click the extension icon in Chrome. The first-use guide helps you save one shortcut, try it in a practice field with `Ctrl + Space` (Control on Mac too), and export a JSON backup.
    - You can skip the guide. If you close it after saving your first shortcut, it resumes at practice when you reopen Fillin. Existing libraries open as usual.
-   - Use **Export snippets** at the top of the library for later backups, or **Import snippets** to restore a JSON file. Practice does not add to usage statistics.
+   - Use **Export** at the top of the library for later backups, or **Import** to restore JSON or full ZIP backups. Libraries containing media export a full ZIP by default. Practice does not add to usage statistics.
    - On a website, type your saved trigger in a text box and press `Ctrl + Space`.
 
 ---
@@ -246,7 +247,7 @@ After a production build, run `corepack pnpm --filter @fillin/landing-frontend t
 Fillin is built on a strict **privacy-first design**:
 
 - **Zero Remote Analytics**: Keystroke detection and expansion occur entirely inside your browser tab's content script sandbox.
-- **Chrome Permissions**: `"storage"` saves snippets, settings, and statistics locally, and holds temporary selection drafts in session storage. `"clipboardWrite"` supports the Google Docs clipboard fallback. `"contextMenus"` adds **Save selection to Fillin** to the right-click menu. The content script runs on matching websites (`<all_urls>`, including frames) to expand text and verify selections. No `"tabs"`, `"cookies"`, `"clipboardRead"`, or `"webRequest"` permissions are requested.
+- **Chrome Permissions**: `"storage"` saves snippets, settings, and statistics locally, and holds temporary selection drafts in session storage. `"clipboardWrite"` supports the Google Docs text fallback and explicitly requested image/caption copying. `"contextMenus"` adds **Save selection to Fillin** to the right-click menu. The content script runs on matching websites (`<all_urls>`, including frames) to expand text and verify selections. No `"tabs"`, `"cookies"`, `"clipboardRead"`, or `"webRequest"` permissions are requested.
 - **Save selection to Fillin**: Select text on an ordinary webpage, right-click, and choose **Save selection to Fillin**. A separate editor suggests a shortcut and fills in the selected text; tags are optional. Nothing is added until you save. Password/protected fields and blocked sites are excluded. Drafts are limited to 100,000 characters and five open editors, expire after ten minutes, and are cleared on save, discard, or window close. Browser restarts clear session drafts. Newly captured HTML-like text and template markers remain literal unless you explicitly change their editor options. Reload the unpacked extension and existing webpage tabs to try this local implementation; a release may prompt for the new menu permission.
 - **Decoupled Architecture**: The extension codebase makes zero HTTP/REST calls to any backend server.
 
@@ -265,7 +266,7 @@ Developers contributing to Fillin must adhere to the rules defined in [`AGENTS.m
 ##  Frequently Asked Questions (FAQ)
 
 **Where does Fillin work?**  
-Fillin natively supports text inputs, forms, and rich-text editors everywhere across the web—including **Google Docs**, **YouTube**, **Gmail**, **Notion**, **GitHub**, and **Jira**. For maximum privacy and zero friction, it intentionally stays out of your browser's native URL address bar and internal browser settings pages.
+Text shortcuts work in ordinary website inputs and rich-text fields; managed editors may need a clipboard fallback. Visual snippets insert directly in Fillin practice and tested native rich-text fields. Google Docs, Gmail, Notion and chat applications use explicit copy/download/attachment options for media; direct media delivery there is not verified. Password/OTP fields, blocked sites, the address bar and browser settings pages are excluded.
 
 **Is my data secure?**  
 Absolutely. Fillin has zero remote analytics and no backend database. Your snippets are stored 100% locally in your browser, and keystrokes are processed entirely within the tab's secure sandbox.

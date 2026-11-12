@@ -3,17 +3,23 @@ import { InputAdapter, InsertionResult } from '../adapters/InputAdapter';
 import { statsService } from '../../services/StatsService';
 import { showTemplateDialog } from '../templates/TemplateDialog';
 import { stopInlineSession } from '../templates/InlineSession';
+import type { MediaSnippet, TextSnippet } from '@fillin/shared';
+import { showMediaDialog } from '../media/MediaDialog';
 
 /** Both existing insertion entry points resolve the same saved content. */
 export async function expandSnippet(
   adapter: InputAdapter,
-  snippet: Pick<Snippet, 'content' | 'isHtml' | 'templateVersion' | 'dateFormat' | 'editAfterInsert'>,
+  snippet: (Pick<TextSnippet, 'content' | 'isHtml' | 'templateVersion' | 'dateFormat' | 'editAfterInsert'> & { kind?: 'text' }) | MediaSnippet,
   start: number,
   end: number,
   eligible: () => boolean = () => true,
   copyOnly = false
 ): Promise<InsertionResult> {
   try {
+    if (snippet.kind === 'media') {
+      stopInlineSession();
+      return await showMediaDialog(adapter.getTarget?.() ?? document.activeElement, snippet, start, end, eligible, copyOnly);
+    }
     stopInlineSession();
     if (!eligible() || (snippet.templateVersion === 1 && snippet.isHtml)) return 'failed';
     const context = { now: new Date(), locale: navigator.language || 'en-US', dateFormat: snippet.dateFormat };

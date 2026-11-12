@@ -4,6 +4,7 @@ import { bookmarkEditable } from '../templates/bookmarks';
 
 export class ContentEditableAdapter implements InputAdapter {
   constructor(private element: HTMLElement) {}
+  getTarget() { return this.element; }
 
   prepareTemplateInsertion(start: number, end: number) {
     return bookmarkEditable(this.element, start, end);

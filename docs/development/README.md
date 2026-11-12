@@ -53,6 +53,8 @@ Set `FILLIN_E2E_PORT` if the default local port `4177` is occupied. Browser test
 
 GitHub CI installs Chromium with its system dependencies and runs these checks after the production builds. Reports and failure traces are uploaded as the `extension-browser-tests` artifact and retained for seven days.
 
+Visual-snippet checks additionally cover original media across restarts, confirmation and undo, protected fields, bounded messaging, full backup restoration into a fresh profile, failed writes and repair. `media-release.spec.ts` runs axe WCAG A/AA checks, keyboard/focus checks, narrow layouts, and a content-script resource probe that verifies typing transfers no media and repeated preview cancellation revokes every object URL. A service test checks that 100 shortcuts sharing a file read the original only once during reconciliation. Automated checks do not replace manual assistive-technology or third-party application testing. See the [user guide](../product/visual-snippets.md) and [release review](visual-snippets-release.md).
+
 ## Landing Page Development
 The landing page (`apps/landing/frontend`) is a standard Vite + React + TailwindCSS application.
 - Run `pnpm exec turbo run dev --filter=@fillin/landing-frontend` from the repository root to build the shared package before starting Vite.

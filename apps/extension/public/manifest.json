@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Fillin",
-  "version": "0.1.0",
-  "description": "Fill in your own blanks. A personal text shortcut tool.",
+  "version": "0.2.0",
+  "description": "Fill in your own blanks. Local text, image and GIF shortcuts with portable backups.",
   "action": {
     "default_popup": "src/popup/index.html",
     "default_icon": {

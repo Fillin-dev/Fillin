@@ -1,6 +1,6 @@
 {
   "name": "@fillin/extension",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "@fillin/shared": "workspace:*",
+    "fflate": "0.8.2",
     "lucide-react": "^1.52.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",

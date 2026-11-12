@@ -1,6 +1,7 @@
 import { InputAdapter } from './InputAdapter';
 
 export class GoogleDocsAdapter implements InputAdapter {
+  getTarget() { return document.activeElement instanceof HTMLElement ? document.activeElement : document.body; }
   private static instance: GoogleDocsAdapter | null = null;
   private buffer: string = '';
   private maxBufferSize: number = 30;

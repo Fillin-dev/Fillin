@@ -2,6 +2,7 @@ import { StatsService } from '../services/StatsService';
 import { BlacklistService } from '../services/BlacklistService';
 import { SuggestionSettings } from '../services/SuggestionSettings';
 import { installCaptureMenu } from '../capture/contextMenu';
+import { installMediaTransfer } from './mediaTransfer';
 import {
   isStorageUpdateRequest,
   StorageUpdateResponse,
@@ -11,6 +12,7 @@ const stats = new StatsService(true);
 const blacklist = new BlacklistService(true);
 const suggestions = new SuggestionSettings(true);
 installCaptureMenu();
+installMediaTransfer();
 
 chrome.runtime.onMessage.addListener(
   (message: unknown, sender, sendResponse) => {

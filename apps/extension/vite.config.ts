@@ -7,7 +7,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: 'src/popup/index.html',
-        background: 'src/background/index.ts'
+        background: 'src/background/index.ts',
+        mediaEditor: 'src/media/editor/index.html'
       },
       output: {
         entryFileNames: '[name].js',

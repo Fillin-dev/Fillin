@@ -111,6 +111,7 @@ export class SnippetService {
       }
 
       const currentSnippet = snippets[index];
+      if (currentSnippet.kind === 'media') throw new Error('Use the media editor to change this snippet.');
 
       if (updates.trigger && updates.trigger !== currentSnippet.trigger) {
         const triggerExists = snippets.some(
@@ -169,6 +170,10 @@ export class SnippetService {
       if (!Array.isArray(incomingData)) {
         throw new Error('Import data must be a JSON array of snippets.');
       }
+      if (incomingData.some(item => item && typeof item === 'object' && 'kind' in item &&
+          (item as { kind?: string }).kind !== undefined && (item as { kind?: string }).kind !== 'text')) {
+        throw new Error('Media snippets require a full backup with original files. This JSON import has not changed your library.');
+      }
 
       const existing = await this.repository.getAll();
       const existingMap = new Map(existing.map((s) => [s.trigger, s]));
@@ -188,6 +193,7 @@ export class SnippetService {
         if (existingMap.has(snippet.trigger)) {
           // Update existing snippet
           const curr = existingMap.get(snippet.trigger)!;
+          if (curr.kind === 'media') { skipped++; continue; }
           existingMap.set(snippet.trigger, {
             ...curr,
             content: snippet.content,

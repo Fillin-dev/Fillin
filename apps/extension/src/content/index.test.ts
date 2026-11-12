@@ -198,6 +198,18 @@ describe('Content Script Replacer', () => {
   });
 
   describe('Command Palette Shortcut', () => {
+    it('ignores scripted media keystrokes without erasing the trigger', () => {
+      updateCache([{
+        kind: 'media', mediaVersion: 1, id: 'media', trigger: '/media', content: '',
+        assetId: 'a'.repeat(64), mime: 'image/png', byteSize: 100, width: 1, height: 1, frameCount: 1,
+        originalFilename: 'example.png', caption: '', alt: '', createdAt: 1, updatedAt: 1,
+      }]);
+      const input = document.createElement('input'); document.body.appendChild(input);
+      input.value = '/media'; input.focus(); input.setSelectionRange(6, 6);
+      const event = new KeyboardEvent('keydown', { key: ' ', code: 'Space', ctrlKey: true, cancelable: true });
+      handleKeyDown(event);
+      expect(input.value).toBe('/media'); expect(event.defaultPrevented).toBe(false);
+    });
     it('opens command palette on Ctrl+Shift+K', () => {
       const event = new KeyboardEvent('keydown', {
         key: 'k',

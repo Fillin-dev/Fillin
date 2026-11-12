@@ -219,7 +219,7 @@ export class SuggestionController {
       title.textContent = snippet.trigger;
       const preview = document.createElement('span');
       preview.className = 'preview';
-      let text = snippet.content;
+      let text = snippet.kind === 'media' ? `${snippet.mime === 'image/gif' ? 'GIF' : 'Image'} · ${snippet.caption || snippet.originalFilename}` : snippet.content;
       if (snippet.templateVersion === 1) {
         try {
           text = resolveTemplate(text, {
@@ -243,7 +243,7 @@ export class SuggestionController {
         event.preventDefault();
         event.stopPropagation();
       });
-      button.addEventListener('click', () => this.insert(index));
+      button.addEventListener('click', event => this.insert(index, event.isTrusted));
       this.panel!.append(button);
     });
     const hint = document.createElement('p');
@@ -270,10 +270,11 @@ export class SuggestionController {
       ],
     });
   }
-  private insert(index: number) {
+  private insert(index: number, trusted = false) {
     const captured = this.context,
       snippet = this.matches[index];
     const current = this.read();
+    if (snippet?.kind === 'media' && !trusted) return;
     if (
       !captured ||
       !snippet ||
@@ -339,7 +340,7 @@ export class SuggestionController {
       if (this.selected >= 0) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        this.insert(this.selected);
+        this.insert(this.selected, event.isTrusted);
       } else this.close();
     }
   };

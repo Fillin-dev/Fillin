@@ -1,19 +1,26 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "archive": "fillin-extension.zip",
-  "sha256": "0cc44ff06bbbf9f790a50e3d0e5f363faccdd33b040e2e4e2ebc0a6b88ef4293",
-  "size": 151837,
+  "sha256": "5aba80a08a2fa8e16fb6162c6a55b30e639e1d38074a45c50a92282c98f3634b",
+  "size": 244793,
   "files": {
     "CaptureDrafts.js": "8f25fcee1c5b8a7db914e4e669f72a772b38c6d85b825ed52b5a37a0a0f6f68a",
-    "background.js": "27f264074c11c081f1e0ce4644d85af28173388a74c370e3c27dd1e14a9dbcf5",
-    "content.js": "3dbced12f5a9f2d35ce1feb90cb259dcfc3cfd8253abf9cf34055608c226d3fe",
+    "MediaAssetRepository.js": "5a8979a0fc0a78986e82f3e72b626348d4f8cfbca7269fab9372d8ad503135dc",
+    "assets/backup.worker-C07h7CA0.js": "46a68a7df12b18e1514937d392b2898e4a6ac2086422f10c426d10417ec0a0fe",
+    "assets/prepareMedia.worker-DMIeN-65.js": "21376a1f3a59bdc81aba6eec6e0fa28a0946a0a7a1a7ef30368b879650358e7c",
+    "background.js": "19e1885f94f4e04bc6f7b0058521de737a2f4b0eaca5215200219c2157c65cd9",
+    "content.js": "65605a9878266f1707b78e4e05f2176df6cdf58022d36c6630c01eb4ce713233",
+    "global.css": "dc5e93bd6eccb8dffaa01ad162620a3aa6a8da64d05fe5068881c2307eafce91",
+    "global.js": "d8447331282ef96b7cb577e40555984c63f623ed0315f69fad075f8972485812",
     "icon128.png": "f75f79e53b3dcb61c32e505ab6aaf75d0c54d00c773f21a6edf5af65fd8c6cac",
     "icon16.png": "8930d3db6bccc346745b04ee1e10f5e2e7d987f2d8414874bbfcc82872b9f4a8",
     "icon48.png": "4d2d144c8c1d65e48fde55cb8981d3ca43476fa3b7c32606e326f503bb51fce7",
-    "manifest.json": "3225152d7e10807da3679a9dc6d2392b06dd77679bd219e354d11f7c092a1d39",
-    "popup.css": "5e17ec89551a29462cc7bddbe6fe506fc50e682acb40fb351319db38e9827b27",
-    "popup.js": "6091cefdd3e9b431d3c6c4e3b876a49c03a4fdd46d631605da85ba6334b7f48e",
-    "src/popup/index.html": "50b2bc7318026c4a818667d63d42fd24f63d9187bf03b75475c0278d50cac086"
+    "manifest.json": "01bdc04c2222d5c3d04e582eb5a86c3d943ce25bc676e35420c66724e05af484",
+    "mediaEditor.css": "085b7706779a0b57313733736a8bdc0e9f74c0920a4a52071a0ff62043824f0d",
+    "mediaEditor.js": "6112e3ee556d16463959406a7643ee683fe3a357dfa5efd0f060c3fcc1aebf03",
+    "popup.js": "f8e05e08a8abc6753a2c4099ede8da947a1caf2946e52f258ab9c9a3e7763de8",
+    "src/media/editor/index.html": "5ca51d2dd8fdda6097fb852b432a333b56ed2f471155a551560a7a5b9a614656",
+    "src/popup/index.html": "cd969b05e0e45833ae85ae3fe2723369d16bd42cb8c2e2212e2d9d13fe123a1b"
   },
-  "notes": "- Resolve enabled date/time templates on each expansion; new starter shortcuts include dynamic /today, /time, and /now without changing existing saved snippets.\n- Add optional cursor-side shortcut suggestions, off by default, with explicit insertion and protected-field/site exclusions.\n- Add Save selection to Fillin to the right-click menu, using temporary local drafts and a separate editor. This adds the contextMenus permission.\n- Add local fill-in templates with repeated fields, a completed-message preview, safe cancellation, and explicit copying for unsupported editors.\n- Add one final {{cursor}} marker with verified positioning in supported fields and clean copying for unstable rich-text positions and Google Docs.\n- Add optional editing after insertion in supported text inputs and textareas, with independent placeholders, Tab/Shift+Tab navigation, native undo/redo, and safe cleanup.\n- Preserve literal snippets and backup metadata, avoid counting copied or unconfirmed insertions, and count inline savings without placeholder labels or user typing.\n- Expand automated checks to 246 shared/extension unit tests and 72 installed Chromium checks; retain website and release-integrity checks."
+  "notes": "- Add local visual snippets for PNG, JPEG and GIF originals, with shortcuts, tags, literal captions, image descriptions and searchable static thumbnails.\n- Add a separate image editor with file drop/chooser, safe replacement, saved-file recovery and a practice field with confirmation, caret placement and native undo.\n- Preview visual shortcuts from the hotkey, command palette and optional suggestions. Confirm insertion in native rich-text fields; use explicit copy/download/attachment options for plain text and managed editors, including Google Docs, Gmail and Notion.\n- Preserve animated GIF originals, start previews still, and respect reduced motion without changing saved files. Copying a GIF is explicitly labelled as a still image.\n- Add versioned full ZIP backups with original media, validated restoration, conflict review, failed-write recovery and an explicit repair option that keeps local captions unless replacement is selected. Preserve text-only JSON compatibility.\n- Validate media bytes and archive contents, bound storage/decoding/transfers, protect concurrent writes, and exclude protected fields and blocked websites without new Chrome permissions.\n- Check shared originals once per library review, release preview URLs on close, and add installed-browser accessibility, keyboard, narrow-layout and resource-lifecycle checks."
 }

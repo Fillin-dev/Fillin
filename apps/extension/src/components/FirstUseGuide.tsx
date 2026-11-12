@@ -3,6 +3,7 @@ import { detectTrigger, replaceTrigger, Snippet } from '@fillin/shared';
 import { snippetService } from '../services';
 import { readFirstUse, saveFirstUse } from '../storage/firstUse';
 import { exportBackup } from '../utils/exportBackup';
+import { exportFullBackup } from '../backup';
 
 interface Props {
   snippets: Snippet[];
@@ -15,8 +16,9 @@ const fieldClass = 'popup-input';
 
 export function FirstUseGuide({ snippets, onClose, children }: Props) {
   const [mode, setMode] = useState<'loading' | 'guide' | 'library' | 'error'>('loading');
-  const [snippet, setSnippet] = useState<Snippet | undefined>(snippets[0]);
-  const [step, setStep] = useState<1 | 2 | 3>(snippets.length ? 2 : 1);
+  const firstText = snippets.find(snippet => snippet.kind !== 'media');
+  const [snippet, setSnippet] = useState<Snippet | undefined>(firstText);
+  const [step, setStep] = useState<1 | 2 | 3>(firstText ? 2 : 1);
   const [trigger, setTrigger] = useState('hello');
   const [content, setContent] = useState('Hello there!');
   const [practice, setPractice] = useState('');
@@ -250,7 +252,9 @@ export function FirstUseGuide({ snippets, onClose, children }: Props) {
               disabled={busy}
               onClick={() =>
                 void run(async () => {
-                  exportBackup(await snippetService.getSnippets());
+                  const saved = await snippetService.getSnippets();
+                  if (saved.some(snippet => snippet.kind === 'media')) await exportFullBackup();
+                  else exportBackup(saved);
                   setDownloadRequested(true);
                 })
               }

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0] - 2026-11-12
+
+- Add local visual snippets for PNG, JPEG and GIF originals, with shortcuts, tags, literal captions, image descriptions and searchable static thumbnails.
+- Add a separate image editor with file drop/chooser, safe replacement, saved-file recovery and a practice field with confirmation, caret placement and native undo.
+- Preview visual shortcuts from the hotkey, command palette and optional suggestions. Confirm insertion in native rich-text fields; use explicit copy/download/attachment options for plain text and managed editors, including Google Docs, Gmail and Notion.
+- Preserve animated GIF originals, start previews still, and respect reduced motion without changing saved files. Copying a GIF is explicitly labelled as a still image.
+- Add versioned full ZIP backups with original media, validated restoration, conflict review, failed-write recovery and an explicit repair option that keeps local captions unless replacement is selected. Preserve text-only JSON compatibility.
+- Validate media bytes and archive contents, bound storage/decoding/transfers, protect concurrent writes, and exclude protected fields and blocked websites without new Chrome permissions.
+- Check shared originals once per library review, release preview URLs on close, and add installed-browser accessibility, keyboard, narrow-layout and resource-lifecycle checks.
+
 ## [0.1.0] - 2026-11-12
 
 - Resolve enabled date/time templates on each expansion; new starter shortcuts include dynamic /today, /time, and /now without changing existing saved snippets.

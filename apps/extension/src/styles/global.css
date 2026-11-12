@@ -35,6 +35,31 @@ html.capture-page { width: 100%; min-width: 320px; height: 100%; }
   --popup-soft-blue: #edf2ff;
 }
 
+.library-create-actions { display:flex; gap:8px; }
+.library-create-actions > .popup-primary { flex:1; }
+.library-create-actions > .media-create-button { width:auto; flex:0 0 auto; padding:10px 13px; font-size:11px; }
+.media-type-filters { display:flex; gap:5px; padding:10px 18px 0; }
+.media-type-filters button { border:1px solid #d6dfef; padding:5px 11px; border-radius:8px; color:#475467; background:#fff; font-size:10px; }
+.media-type-filters button[aria-pressed=true] { color:#2049b5; background:#edf2ff; border-color:#b4c7fb; }
+.media-card-content { display:flex; align-items:center; gap:12px; margin-top:10px; }
+.media-card-content > div:last-child { min-width:0; }
+.media-card-content .snippet-preview { margin-top:4px; }
+.media-card-content small { color:#526079; font-size:10px; }
+.media-format-badge { font-size:9px; padding:2px 6px; color:#2450c0; background:#edf2ff; border-radius:5px; }
+.media-thumb { display:flex; align-items:center; justify-content:center; flex:0 0 58px; width:58px; height:58px; background:#eef2f8; border:1px solid #dce3ef; border-radius:9px; overflow:hidden; }
+.media-thumb img { max-width:100%; max-height:100%; object-fit:contain; }
+.media-thumb span { color:#526079; font-size:9px; text-align:center; line-height:1.5; }
+.media-library-status { font-size:10px; color:#526079; line-height:1.7; margin:0 0 12px; padding:10px 12px; border:1px solid #d7e2fc; background:#f0f4ff; border-radius:10px; }
+.media-library-status p + p { margin-top:4px; }
+.media-library-status button { text-decoration:underline; padding:2px 4px; }
+.backup-dialog-body { padding:24px; font-size:12px; line-height:1.65; }
+.backup-dialog-body h2 { font-size:19px; font-weight:700; margin:0 0 10px; }
+.backup-dialog-body p { margin:10px 0; color:#526079; }
+.backup-dialog-body > button { margin-top:10px; width:100%; }
+.backup-dialog-body label { display:flex; align-items:center; gap:9px; margin:12px 0; font-weight:600; }
+.backup-dialog-body input { accent-color:#2457f5; }
+.backup-conflicts { overflow-wrap:anywhere; font-family:ui-monospace,monospace; }
+
 @layer base {
   * {
     box-sizing: border-box;

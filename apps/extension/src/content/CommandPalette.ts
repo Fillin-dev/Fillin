@@ -106,7 +106,7 @@ export class CommandPalette {
     const copyOnly = this.targetCopyOnly;
     const hasFields = snippet.templateVersion === 1 && (getTemplateFields(snippet.content).length > 0 || hasTemplateCursor(snippet.content));
     const adapterBeforeClose = AdapterFactory.getAdapter(el);
-    const needsBookmark = hasFields && !!adapterBeforeClose?.prepareTemplateInsertion;
+    const needsBookmark = (hasFields || snippet.kind === 'media') && !!adapterBeforeClose?.prepareTemplateInsertion;
     const unchanged = !needsBookmark || (bookmark ? bookmark.isValid() : copyOnly && !!adapterBeforeClose?.canCopyTemplate?.());
     this.close();
     if (!unchanged || (needsBookmark && bookmark && !bookmark.isValid())) return;
@@ -357,7 +357,7 @@ export class CommandPalette {
       this.filteredSnippets.forEach((s, idx) => {
         const item = document.createElement('div');
         item.className = `item ${idx === this.selectedIndex ? 'selected' : ''}`;
-        item.addEventListener('click', () => this.insertSnippet(s));
+        item.addEventListener('click', event => { if (s.kind !== 'media' || event.isTrusted) this.insertSnippet(s); });
 
         const left = document.createElement('div');
         left.className = 'item-left';
@@ -378,7 +378,7 @@ export class CommandPalette {
 
         const preview = document.createElement('span');
         preview.className = 'preview';
-        preview.textContent = s.content;
+        preview.textContent = s.kind === 'media' ? `${s.mime === 'image/gif' ? 'GIF' : 'Image'} · ${s.caption || s.originalFilename}` : s.content;
 
         item.appendChild(left);
         item.appendChild(preview);
@@ -404,6 +404,7 @@ export class CommandPalette {
           (s) =>
             s.trigger.toLowerCase().includes(q) ||
             s.content.toLowerCase().includes(q) ||
+            s.kind === 'media' && [s.caption, s.originalFilename, s.alt].some(value => value.toLowerCase().includes(q)) ||
             (s.tags && s.tags.some((t) => t.toLowerCase().includes(q)))
         );
       }
@@ -428,7 +429,8 @@ export class CommandPalette {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (this.filteredSnippets.length > 0 && this.filteredSnippets[this.selectedIndex]) {
-          this.insertSnippet(this.filteredSnippets[this.selectedIndex]);
+          const snippet = this.filteredSnippets[this.selectedIndex];
+          if (snippet.kind !== 'media' || e.isTrusted) this.insertSnippet(snippet);
         }
       } else if (e.key === 'Escape') {
         e.preventDefault();

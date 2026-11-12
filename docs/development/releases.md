@@ -7,13 +7,13 @@ The extension package and source manifest use the same three-part numeric versio
 From the repository root, using the pinned pnpm version:
 
 ```bash
-corepack pnpm release:version 0.0.3
+corepack pnpm release:version 0.2.0
 corepack pnpm install --frozen-lockfile
 ```
 
 The version command updates `apps/extension/package.json` and `apps/extension/public/manifest.json` together. Choose a version greater than the existing one; prerelease suffixes, leading zeros, and components above 65535 are rejected. Refresh the workspace installation after changing the package version.
 
-Add a `## [0.0.3] - YYYY-MM-DD` entry to the root `CHANGELOG.md`, with bullet points describing what changed. Then run:
+Add a matching version entry such as `## [0.2.0] - YYYY-MM-DD` to the root `CHANGELOG.md`, with bullet points describing what changed. Then run:
 
 ```bash
 corepack pnpm release:extension

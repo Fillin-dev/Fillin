@@ -9,6 +9,7 @@ import { SUGGESTIONS_KEY, parseSuggestions } from '../services/SuggestionSetting
 import { installSelectionGuard } from '../capture/selectionGuard';
 import { cancelTemplateDialog, isTemplateDialogOpen } from './templates/TemplateDialog';
 import { isInlineSessionActive, stopInlineSession } from './templates/InlineSession';
+import { cancelMediaDialog, isMediaDialogOpen } from './media/MediaDialog';
 
 if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) installSelectionGuard();
 
@@ -25,6 +26,7 @@ export function updateBlacklistCache(domains: string[]) {
   suggestions?.close();
   blacklistedDomainsCache = (domains || []).map((d) => d.toLowerCase().replace(/^www\./, ''));
   cancelTemplateDialog();
+  cancelMediaDialog();
   stopInlineSession();
 }
 
@@ -43,7 +45,8 @@ export function updateCache(
   suggestions?.close();
   snippetsCache = {};
   triggersCache = [];
-  fullSnippetsCache = (snippets || []).map((s, idx) => ({
+  cancelMediaDialog();
+  fullSnippetsCache = (snippets || []).map((s, idx) => 'kind' in s && s.kind === 'media' ? s : ({
     id: (s as Snippet).id || String(idx),
     trigger: s.trigger,
     content: s.content,
@@ -102,7 +105,7 @@ const suggestions = typeof document === 'undefined' ? null : new SuggestionContr
   snippets: () => fullSnippetsCache,
   allowed: () => !isCurrentSiteBlacklisted(),
   target: () => getDeepActiveElement(),
-  paletteOpen: () => commandPalette.isOpen() || isTemplateDialogOpen() || isInlineSessionActive(),
+  paletteOpen: () => commandPalette.isOpen() || isTemplateDialogOpen() || isMediaDialogOpen() || isInlineSessionActive(),
 });
 function applySuggestions(value: unknown) {
   try { suggestions?.setEnabled(parseSuggestions(value)); }
@@ -110,7 +113,7 @@ function applySuggestions(value: unknown) {
 }
 
 export function handleKeyDown(e: KeyboardEvent) {
-  if (isTemplateDialogOpen()) return;
+  if (isTemplateDialogOpen() || isMediaDialogOpen()) return;
   if (isCurrentSiteBlacklisted()) return;
 
   const targetEl = getTargetElement(e);
@@ -164,6 +167,7 @@ export function handleKeyDown(e: KeyboardEvent) {
     const detection = detectTrigger(text, cursor, triggersCache);
     if (detection) {
       const snippet = snippetsCache[detection.trigger];
+      if (snippet?.kind === 'media' && !e.isTrusted) return;
       if (snippet !== undefined) {
         e.preventDefault();
         e.stopPropagation();
@@ -241,12 +245,13 @@ if (typeof document !== 'undefined') {
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('fillin-template-open', () => { stopInlineSession(); suggestions?.close(); if (commandPalette.isOpen()) commandPalette.close(); });
   document.addEventListener('fillin-inline-open', () => { suggestions?.close(); if (commandPalette.isOpen()) commandPalette.close(); });
+  document.addEventListener('fillin-media-open', () => { stopInlineSession(); cancelTemplateDialog(); suggestions?.close(); if (commandPalette.isOpen()) commandPalette.close(); });
   initGoogleDocsObserver();
 
   if (typeof window !== 'undefined') {
     window.addEventListener('message', (event) => {
       if (event.data?.type === 'FILLIN_OPEN_PALETTE') {
-        if (isTemplateDialogOpen()) return;
+        if (isTemplateDialogOpen() || isMediaDialogOpen()) return;
         suggestions?.close();
         const activeTarget = getTargetElement() || document.activeElement;
         commandPalette.open(activeTarget);

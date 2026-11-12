@@ -6,6 +6,7 @@ export interface TemplateBookmark {
   dispose(): void;
 }
 export interface InputAdapter {
+  getTarget?(): HTMLElement | null;
   startInlineEditing?(start: number, end: number, template: InlineTemplate, eligible: () => boolean): InlineStartResult;
   prepareTemplateInsertion?(start: number, end: number): TemplateBookmark | null;
   canCopyTemplate?(): boolean;
