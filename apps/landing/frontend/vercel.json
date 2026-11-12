@@ -1,4 +1,10 @@
 {
+  "headers": [
+    {
+      "source": "/fillin-extension.zip",
+      "headers": [{ "key": "Content-Disposition", "value": "inline" }]
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
