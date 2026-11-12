@@ -107,6 +107,28 @@ describe('background storage updates from separate clients', () => {
     vi.restoreAllMocks();
   });
 
+  it('defaults suggestions off and serializes settings from separate clients', async () => {
+    const { SuggestionSettings } = await import('../services/SuggestionSettings');
+    const a = new SuggestionSettings(), b = new SuggestionSettings();
+    expect(await a.get()).toBe(false);
+    await Promise.all([a.set(true), b.set(false)]);
+    expect(stored.fillin_suggestions_enabled).toBe(false);
+  });
+  it('preserves suggestion settings on failed reads or writes and rejects invalid values', async () => {
+    const { SuggestionSettings } = await import('../services/SuggestionSettings');
+    const settings = new SuggestionSettings();
+    stored.fillin_suggestions_enabled = true;
+    failNextRead = true;
+    await expect(settings.set(false)).rejects.toThrow();
+    expect(stored.fillin_suggestions_enabled).toBe(true);
+    failNextWrite = true;
+    await expect(settings.set(false)).rejects.toThrow();
+    expect(stored.fillin_suggestions_enabled).toBe(true);
+    stored.fillin_suggestions_enabled = 'broken';
+    await expect(settings.set(false)).rejects.toThrow();
+    expect(stored.fillin_suggestions_enabled).toBe('broken');
+  });
+
   it('counts every simultaneous expansion through the worker', async () => {
     await Promise.all(
       Array.from({ length: 50 }, (_, index) =>

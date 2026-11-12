@@ -1,4 +1,5 @@
 export type StorageUpdateRequest =
+  | { type: 'FILLIN_STORAGE_UPDATE'; operation: 'setSuggestions'; enabled: boolean }
   | {
       type: 'FILLIN_STORAGE_UPDATE';
       operation: 'recordExpansion';
@@ -59,6 +60,8 @@ export function isStorageUpdateRequest(
   const request = value as Record<string, unknown>;
   if (request.type !== 'FILLIN_STORAGE_UPDATE') return false;
   switch (request.operation) {
+    case 'setSuggestions':
+      return typeof request.enabled === 'boolean';
     case 'recordExpansion':
       return (
         typeof request.triggerLength === 'number' &&

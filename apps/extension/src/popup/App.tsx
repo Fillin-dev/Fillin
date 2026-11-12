@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Snippet } from '@fillin/shared';
+import { Snippet, TemplateOptions } from '@fillin/shared';
 import { useSnippets } from '../hooks/useSnippets';
 import { useStats } from '../hooks/useStats';
 import { useBlacklist } from '../hooks/useBlacklist';
@@ -9,6 +9,7 @@ import { SnippetForm } from '../components/SnippetForm';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { BlacklistModal } from '../components/BlacklistModal';
 import { FirstUseGuide } from '../components/FirstUseGuide';
+import { SuggestionToggle } from '../components/SuggestionToggle';
 import { Plus, Zap } from 'lucide-react';
 
 export function App() {
@@ -56,11 +57,11 @@ export function App() {
 
   const handleDelete = (id: string) => setPendingDeleteId(id);
 
-  const handleSave = async (trigger: string, content: string, isHtml: boolean, tags?: string[]) => {
+  const handleSave = async (trigger: string, content: string, isHtml: boolean, tags?: string[], template?: TemplateOptions) => {
     if (editingSnippet) {
-      await updateSnippet(editingSnippet.id, trigger, content, isHtml, tags);
+      await updateSnippet(editingSnippet.id, trigger, content, isHtml, tags, template);
     } else {
-      await createSnippet(trigger, content, isHtml, tags);
+      await createSnippet(trigger, content, isHtml, tags, template);
     }
   };
 
@@ -136,6 +137,7 @@ export function App() {
 
             {/* Footer Area: Stats + CTA */}
             <footer className="library-footer">
+              <SuggestionToggle />
               {/* Gamification metric */}
               <div className="library-stats">
                 <span>

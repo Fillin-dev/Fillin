@@ -1,19 +1,19 @@
 {
-  "version": "0.0.5",
+  "version": "0.1.0",
   "archive": "fillin-extension.zip",
-  "sha256": "54f7ce67f07d0f4a490189937c89b6a105e67255cc18e0da1d00079c05bcc4aa",
-  "size": 132783,
+  "sha256": "0cc44ff06bbbf9f790a50e3d0e5f363faccdd33b040e2e4e2ebc0a6b88ef4293",
+  "size": 151837,
   "files": {
-    "BlacklistService.js": "f189b328ddbdd3ae38af802232d5bb6e28b656fa01421113553a2c05d21b80ed",
-    "background.js": "dcece2532d356266d99244f66036ab925b4d9f3ba7a3a6fec226d5ad22d0015a",
-    "content.js": "7832fd2a7c38339e872986544d501cc54b35ace584f63a955e3e2e48d11cb101",
+    "CaptureDrafts.js": "8f25fcee1c5b8a7db914e4e669f72a772b38c6d85b825ed52b5a37a0a0f6f68a",
+    "background.js": "27f264074c11c081f1e0ce4644d85af28173388a74c370e3c27dd1e14a9dbcf5",
+    "content.js": "3dbced12f5a9f2d35ce1feb90cb259dcfc3cfd8253abf9cf34055608c226d3fe",
     "icon128.png": "f75f79e53b3dcb61c32e505ab6aaf75d0c54d00c773f21a6edf5af65fd8c6cac",
     "icon16.png": "8930d3db6bccc346745b04ee1e10f5e2e7d987f2d8414874bbfcc82872b9f4a8",
     "icon48.png": "4d2d144c8c1d65e48fde55cb8981d3ca43476fa3b7c32606e326f503bb51fce7",
-    "manifest.json": "637d884bcda940967dca9359c2343c50511cc25b0cff12e1178531584396addc",
-    "popup.css": "ea0a6d96d051d96110051ecdecefa2b7b89dea9e03ad523d9b98488cf17ca99f",
-    "popup.js": "8f60d8c6cd779feff49c056169c463734728078832d5d0905adf4b5433187d1a",
-    "src/popup/index.html": "3dbf2edcb2d6341ad568b0de96b4d5c6e29a476bd87403f4fc21965b83ba7d0c"
+    "manifest.json": "3225152d7e10807da3679a9dc6d2392b06dd77679bd219e354d11f7c092a1d39",
+    "popup.css": "5e17ec89551a29462cc7bddbe6fe506fc50e682acb40fb351319db38e9827b27",
+    "popup.js": "6091cefdd3e9b431d3c6c4e3b876a49c03a4fdd46d631605da85ba6334b7f48e",
+    "src/popup/index.html": "50b2bc7318026c4a818667d63d42fd24f63d9187bf03b75475c0278d50cac086"
   },
-  "notes": "- Fix the collapsed toolbar popup by giving its document an explicit width and intrinsic height, while fitting the content to the height Chrome provides.\n- Add regression checks that open the real toolbar popup without an emulated viewport, covering first-use guidance, the saved library, and the editor's Save button."
+  "notes": "- Resolve enabled date/time templates on each expansion; new starter shortcuts include dynamic /today, /time, and /now without changing existing saved snippets.\n- Add optional cursor-side shortcut suggestions, off by default, with explicit insertion and protected-field/site exclusions.\n- Add Save selection to Fillin to the right-click menu, using temporary local drafts and a separate editor. This adds the contextMenus permission.\n- Add local fill-in templates with repeated fields, a completed-message preview, safe cancellation, and explicit copying for unsupported editors.\n- Add one final {{cursor}} marker with verified positioning in supported fields and clean copying for unstable rich-text positions and Google Docs.\n- Add optional editing after insertion in supported text inputs and textareas, with independent placeholders, Tab/Shift+Tab navigation, native undo/redo, and safe cleanup.\n- Preserve literal snippets and backup metadata, avoid counting copied or unconfirmed insertions, and count inline savings without placeholder labels or user typing.\n- Expand automated checks to 246 shared/extension unit tests and 72 installed Chromium checks; retain website and release-integrity checks."
 }

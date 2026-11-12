@@ -1,23 +1,56 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Snippet } from '@fillin/shared';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Snippet, TemplateOptions, getTemplateFields, resolveTemplate, resolveInlineTemplate } from '@fillin/shared';
 import { ArrowLeft, Save, X, AlertTriangle, Check } from 'lucide-react';
 
 interface Props {
   snippet?: Snippet;
+  initialContent?: string;
+  initialTrigger?: string;
   existingSnippets?: Snippet[];
-  onSave: (trigger: string, content: string, isHtml: boolean, tags?: string[]) => Promise<void>;
+  onSave: (
+    trigger: string,
+    content: string,
+    isHtml: boolean,
+    tags?: string[],
+    template?: TemplateOptions
+  ) => Promise<void>;
   onCancel: () => void;
   error?: string | null;
 }
 
-export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error }: Props) {
-  const [trigger, setTrigger] = useState(snippet?.trigger || '/');
-  const [content, setContent] = useState(snippet?.content || '');
+export function SnippetForm({ snippet, initialContent, initialTrigger, existingSnippets, onSave, onCancel, error }: Props) {
+  const [trigger, setTrigger] = useState(snippet?.trigger || initialTrigger || '/');
+  const [content, setContent] = useState(snippet?.content ?? initialContent ?? '');
+  const contentRef = useRef<HTMLTextAreaElement>(null);
   const [isHtml, setIsHtml] = useState(snippet?.isHtml || false);
   const [tags, setTags] = useState<string[]>(snippet?.tags || []);
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [templateEnabled, setTemplateEnabled] = useState(snippet?.templateVersion === 1);
+  const [editAfterInsert, setEditAfterInsert] = useState(snippet?.editAfterInsert ?? false);
+  const fieldNames = useMemo(() => { try { return getTemplateFields(content); } catch { return []; } }, [content]);
+  const [dateFormat, setDateFormat] = useState<'friendly' | 'iso'>(
+    snippet?.dateFormat || 'friendly'
+  );
+  const preview = useMemo(() => {
+    if (!templateEnabled) return { text: '', error: '' };
+    try {
+      return {
+        text: (editAfterInsert && fieldNames.length ? resolveInlineTemplate(content, {
+          now: new Date(), locale: navigator.language || 'en-US', dateFormat,
+        }).text : resolveTemplate(content, {
+          now: new Date(),
+          locale: navigator.language || 'en-US',
+          dateFormat,
+          preview: true,
+        })),
+        error: '',
+      };
+    } catch (error) {
+      return { text: '', error: (error as Error).message };
+    }
+  }, [content, templateEnabled, dateFormat, editAfterInsert, fieldNames]);
 
   useEffect(() => {
     setLocalError(error || null);
@@ -72,7 +105,8 @@ export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error
   }, [trigger, existingSnippets, snippet]);
 
   const validTrigger = /^\/[a-zA-Z0-9_-]+$/.test(trigger);
-  const isValid = validTrigger && content.trim().length > 0 && conflict.type !== 'duplicate';
+  const isValid =
+    validTrigger && content.trim().length > 0 && conflict.type !== 'duplicate' && !preview.error;
 
   const handleAddTag = (val: string) => {
     const clean = val
@@ -107,7 +141,15 @@ export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error
         .toLowerCase()
         .replace(/[^a-z0-9_-]/g, '');
       const savedTags = pendingTag ? Array.from(new Set([...tags, pendingTag])) : tags;
-      await onSave(trigger, content, isHtml, savedTags.length ? savedTags : undefined);
+      const finalTags = savedTags.length ? savedTags : undefined;
+      if (templateEnabled || snippet?.templateVersion) {
+        await onSave(trigger, content, isHtml, finalTags, {
+          templateVersion: templateEnabled ? 1 : undefined,
+          dateFormat: templateEnabled ? dateFormat : undefined,
+          ...((editAfterInsert && fieldNames.length && templateEnabled) || snippet?.editAfterInsert !== undefined
+            ? { editAfterInsert: templateEnabled && editAfterInsert && !!fieldNames.length ? true : undefined } : {}),
+        });
+      } else await onSave(trigger, content, isHtml, finalTags);
       onCancel();
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : 'Something went wrong');
@@ -197,6 +239,7 @@ export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error
               <span>{content.length.toLocaleString()} characters</span>
             </div>
             <textarea
+              ref={contentRef}
               id="snippet-content"
               className="popup-input snippet-content-input"
               value={content}
@@ -209,6 +252,101 @@ export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error
             </p>
           </div>
 
+          <div className="form-field">
+            {snippet?.trigger === '/today' && !templateEnabled && (
+              <button
+                type="button"
+                className="popup-secondary"
+                disabled={isSubmitting}
+                onClick={() => {
+                  setContent('{{date}}');
+                  setIsHtml(false);
+                  setTemplateEnabled(true);
+                }}
+              >
+                Make /today show the current date
+              </button>
+            )}
+            <label className="format-option">
+              <input
+                type="checkbox"
+                checked={templateEnabled}
+                disabled={isSubmitting || isHtml}
+                onChange={(event) => setTemplateEnabled(event.target.checked)}
+              />
+              <span>
+                <strong>Use template values</strong>
+                <small>Use dates or ask for fields such as name and company when expanding.</small>
+              </span>
+            </label>
+            {templateEnabled && (
+              <>
+                <div className="trigger-suggestions">
+                  {['date', 'time', 'datetime', 'name', 'company', 'cursor'].map((token) => (
+                    <button
+                      type="button"
+                      key={token}
+                      disabled={isSubmitting}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        const start = contentRef.current?.selectionStart ?? content.length;
+                        const end = contentRef.current?.selectionEnd ?? start;
+                        const text = '{{' + token + '}}';
+                        setContent(content.slice(0, start) + text + content.slice(end));
+                        requestAnimationFrame(() => {
+                          contentRef.current?.focus();
+                          contentRef.current?.setSelectionRange(
+                            start + text.length,
+                            start + text.length
+                          );
+                        });
+                      }}
+                    >
+                      {'{{' + token + '}}'}
+                    </button>
+                  ))}
+                </div>
+                <label className="format-option">
+                  <input type="checkbox" checked={editAfterInsert && fieldNames.length > 0}
+                    disabled={isSubmitting || fieldNames.length === 0}
+                    onChange={(event) => setEditAfterInsert(event.target.checked)} />
+                  <span>
+                    <strong>Edit fields after insertion</strong>
+                    <small>Inserts placeholders immediately in supported text boxes. Use Tab and Shift+Tab to edit; other editors use the fill-in dialog.</small>
+                    <small>Repeated fields are edited separately. Escape stops navigation and keeps your edits.</small>
+                  </span>
+                </label>
+                <label>
+                  Date format
+                  <select
+                    className="popup-input"
+                    value={dateFormat}
+                    disabled={isSubmitting}
+                    onChange={(event) => setDateFormat(event.target.value as 'friendly' | 'iso')}
+                  >
+                    <option value="friendly">Nov 11, 2026</option>
+                    <option value="iso">2026-11-11 (ISO)</option>
+                  </select>
+                </label>
+                {preview.error ? (
+                  <p role="alert" className="form-error">
+                    {preview.error}
+                  </p>
+                ) : (
+                  <div className="field-help">
+                    <strong>Preview now</strong>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{preview.text}</p>
+                    <p>Fill-in fields are answered when expanding. Dates use the time you start the expansion.</p>
+                  </div>
+                )}
+                <p className="field-help">
+                  Use \\{'{{date}}'} for literal braces. Add fields such as {'{{name}}'} or
+                  {' {{order_number}}'} using lowercase letters, numbers, and underscores.
+                  {' '}Use one {'{{cursor}}'} marker where typing should resume.
+                </p>
+              </>
+            )}
+          </div>
           <div className="form-field">
             <label htmlFor="snippet-tags">
               Tags <span className="optional-label">Optional</span>
@@ -262,7 +400,7 @@ export function SnippetForm({ snippet, existingSnippets, onSave, onCancel, error
               type="checkbox"
               checked={isHtml}
               onChange={(event) => setIsHtml(event.target.checked)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || templateEnabled}
             />
             <span>
               <strong>Rich text (HTML)</strong>

@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.0] - 2026-11-12
+
+- Resolve enabled date/time templates on each expansion; new starter shortcuts include dynamic /today, /time, and /now without changing existing saved snippets.
+- Add optional cursor-side shortcut suggestions, off by default, with explicit insertion and protected-field/site exclusions.
+- Add Save selection to Fillin to the right-click menu, using temporary local drafts and a separate editor. This adds the contextMenus permission.
+- Add local fill-in templates with repeated fields, a completed-message preview, safe cancellation, and explicit copying for unsupported editors.
+- Add one final {{cursor}} marker with verified positioning in supported fields and clean copying for unstable rich-text positions and Google Docs.
+- Add optional editing after insertion in supported text inputs and textareas, with independent placeholders, Tab/Shift+Tab navigation, native undo/redo, and safe cleanup.
+- Preserve literal snippets and backup metadata, avoid counting copied or unconfirmed insertions, and count inline savings without placeholder labels or user typing.
+- Expand automated checks to 246 shared/extension unit tests and 72 installed Chromium checks; retain website and release-integrity checks.
+
 ## [0.0.5] - 2026-11-10
 
 - Fix the collapsed toolbar popup by giving its document an explicit width and intrinsic height, while fitting the content to the height Chrome provides.

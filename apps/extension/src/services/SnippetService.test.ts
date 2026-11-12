@@ -11,6 +11,18 @@ describe('SnippetService', () => {
     service = new SnippetService(repository);
   });
 
+  it('preserves inline editing through backup/import and clears it when importing a literal replacement', async () => {
+    const created = await service.createSnippet('/inline', 'Hi {{name}}', false, ['work'], { templateVersion: 1, editAfterInsert: true });
+    const backup = JSON.parse(JSON.stringify(await service.getSnippets()));
+    await service.updateSnippet(created.id, { editAfterInsert: undefined });
+    expect((await service.getSnippets())[0].editAfterInsert).toBeUndefined();
+    await service.importSnippets(backup);
+    expect((await service.getSnippets())[0]).toMatchObject({ content: 'Hi {{name}}', templateVersion: 1, editAfterInsert: true });
+    await service.importSnippets([{ ...backup[0], content: 'Literal {{name}}', templateVersion: undefined, editAfterInsert: undefined }]);
+    expect((await service.getSnippets())[0].editAfterInsert).toBeUndefined();
+    expect((await service.getSnippets())[0].content).toBe('Literal {{name}}');
+  });
+
   describe.each(['queue', 'Web Locks'])(
     'concurrent writes using %s',
     (locking) => {

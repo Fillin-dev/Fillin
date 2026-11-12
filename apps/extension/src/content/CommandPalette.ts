@@ -1,8 +1,9 @@
-import { Snippet } from '@fillin/shared';
+import { Snippet, getTemplateFields, hasTemplateCursor } from '@fillin/shared';
+import type { TemplateBookmark } from './adapters/InputAdapter';
 import { AdapterFactory } from './adapters/AdapterFactory';
 import { GoogleDocsAdapter } from './adapters/GoogleDocsAdapter';
-import { statsService } from '../services/StatsService';
-import { getDeepActiveElement } from './index';
+import { expandSnippet } from './expansion/ExpansionCoordinator';
+import { getDeepActiveElement, isCurrentSiteBlacklisted, isSnippetCurrent } from './index';
 
 export class CommandPalette {
   private host: HTMLElement | null = null;
@@ -10,6 +11,8 @@ export class CommandPalette {
   private targetElement: Element | null = null;
   private targetSelection: { start: number; end: number } | null = null;
   private targetRange: Range | null = null;
+  private targetBookmark: TemplateBookmark | null = null;
+  private targetCopyOnly = false;
   private snippets: Snippet[] = [];
   private filteredSnippets: Snippet[] = [];
   private selectedIndex: number = 0;
@@ -28,9 +31,12 @@ export class CommandPalette {
     if (this.isOpen()) return;
 
     this.targetElement = targetEl || getDeepActiveElement();
+    this.targetSelection = null;
+    this.targetRange = null;
 
     // Preserve cursor position or text range
-    if (this.targetElement instanceof HTMLInputElement || this.targetElement instanceof HTMLTextAreaElement) {
+    if ((this.targetElement instanceof HTMLInputElement || this.targetElement instanceof HTMLTextAreaElement) &&
+      this.targetElement.type !== 'password' && !/password|one-time-code/i.test(this.targetElement.autocomplete)) {
       try {
         this.targetSelection = {
           start: this.targetElement.selectionStart ?? this.targetElement.value.length,
@@ -46,6 +52,14 @@ export class CommandPalette {
       } else {
         this.targetRange = null;
       }
+    }
+
+    const adapter = AdapterFactory.getAdapter(this.targetElement);
+    if (adapter?.prepareTemplateInsertion) {
+      const start = this.targetSelection?.start ?? adapter.getCursorPosition() ?? 0;
+      const end = this.targetSelection?.end ?? start;
+      this.targetBookmark = adapter.prepareTemplateInsertion(start, end);
+      this.targetCopyOnly = !this.targetBookmark && (adapter.canCopyTemplate?.() ?? false);
     }
 
     this.filteredSnippets = [...this.snippets];
@@ -81,11 +95,21 @@ export class CommandPalette {
         // ignore
       }
     }
+    this.targetBookmark?.dispose();
+    this.targetBookmark = null;
+    this.targetCopyOnly = false;
   }
 
   private insertSnippet(snippet: Snippet) {
     let el = this.targetElement;
+    const bookmark = this.targetBookmark;
+    const copyOnly = this.targetCopyOnly;
+    const hasFields = snippet.templateVersion === 1 && (getTemplateFields(snippet.content).length > 0 || hasTemplateCursor(snippet.content));
+    const adapterBeforeClose = AdapterFactory.getAdapter(el);
+    const needsBookmark = hasFields && !!adapterBeforeClose?.prepareTemplateInsertion;
+    const unchanged = !needsBookmark || (bookmark ? bookmark.isValid() : copyOnly && !!adapterBeforeClose?.canCopyTemplate?.());
     this.close();
+    if (!unchanged || (needsBookmark && bookmark && !bookmark.isValid())) return;
 
     if (!el && GoogleDocsAdapter.isGoogleDocs()) {
       el = document.querySelector('.docs-texteventtarget-iframe') || document.body;
@@ -111,10 +135,7 @@ export class CommandPalette {
         end = start;
       }
 
-      adapter.replaceText(start, end, snippet.content, snippet.isHtml);
-      void statsService.recordExpansion(0, snippet.content.length).catch(() => {
-        // Statistics failures must not interrupt snippet insertion.
-      });
+      void expandSnippet(adapter, snippet, start, end, () => !isCurrentSiteBlacklisted() && !!el?.isConnected && isSnippetCurrent(snippet), copyOnly);
     }
   }
 

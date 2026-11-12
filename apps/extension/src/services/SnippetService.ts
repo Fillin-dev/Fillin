@@ -1,4 +1,4 @@
-import { Snippet, snippetSchema } from '@fillin/shared';
+import { Snippet, snippetSchema, TemplateOptions } from '@fillin/shared';
 import { SnippetRepository } from '../storage/SnippetRepository';
 import { withSnippetWriteLock } from '../storage/withSnippetWriteLock';
 
@@ -8,14 +8,13 @@ export const STARTER_SNIPPETS: Omit<
 >[] = [
   {
     trigger: '/today',
-    content: new Date().toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }),
+    content: '{{date}}',
+    templateVersion: 1,
     tags: ['utility'],
     isHtml: false,
   },
+  { trigger: '/time', content: '{{time}}', templateVersion: 1, tags: ['utility'], isHtml: false },
+  { trigger: '/now', content: '{{datetime}}', templateVersion: 1, tags: ['utility'], isHtml: false },
   {
     trigger: '/shrug',
     content: '¯\\_(ツ)_/¯',
@@ -51,7 +50,8 @@ export class SnippetService {
     trigger: string,
     content: string,
     isHtml: boolean = false,
-    tags?: string[]
+    tags?: string[],
+    template: TemplateOptions = {}
   ): Promise<Snippet> {
     return withSnippetWriteLock(async () => {
       const snippets = await this.repository.getAll();
@@ -62,6 +62,7 @@ export class SnippetService {
 
       const now = Date.now();
       const newSnippet: Snippet = {
+        ...template,
         id:
           typeof crypto !== 'undefined' && crypto.randomUUID
             ? crypto.randomUUID()
@@ -99,7 +100,7 @@ export class SnippetService {
 
   async updateSnippet(
     id: string,
-    updates: Partial<Pick<Snippet, 'trigger' | 'content' | 'isHtml' | 'tags'>>
+    updates: Partial<Pick<Snippet, 'trigger' | 'content' | 'isHtml' | 'tags' | 'templateVersion' | 'dateFormat' | 'editAfterInsert'>>
   ): Promise<Snippet> {
     return withSnippetWriteLock(async () => {
       const snippets = await this.repository.getAll();
@@ -192,6 +193,9 @@ export class SnippetService {
             content: snippet.content,
             isHtml: snippet.isHtml,
             tags: snippet.tags,
+            templateVersion: snippet.templateVersion,
+            dateFormat: snippet.dateFormat,
+            editAfterInsert: snippet.editAfterInsert,
             updatedAt: Date.now(),
           });
           updated++;
@@ -236,6 +240,9 @@ export class SnippetService {
             content: starter.content,
             isHtml: starter.isHtml,
             tags: starter.tags,
+            templateVersion: starter.templateVersion,
+            dateFormat: starter.dateFormat,
+            editAfterInsert: starter.editAfterInsert,
             createdAt: now,
             updatedAt: now,
           };

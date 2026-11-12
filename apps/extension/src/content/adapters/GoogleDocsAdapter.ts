@@ -200,20 +200,22 @@ export class GoogleDocsAdapter implements InputAdapter {
     }
   }
 
-  private async copySnippetToClipboard(text: string): Promise<void> {
+  private async copySnippetToClipboard(text: string): Promise<'copied' | 'failed'> {
     try {
       if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
         this.showDocsToast('failed');
-        return;
+        return 'failed';
       }
       await navigator.clipboard.writeText(text);
       this.showDocsToast('copied');
+      return 'copied';
     } catch {
       this.showDocsToast('failed');
+      return 'failed';
     }
   }
 
-  replaceText(start: number, end: number, newContent: string, isHtml?: boolean): void {
+  async replaceText(start: number, end: number, newContent: string, isHtml?: boolean): Promise<'inserted' | 'copied' | 'failed'> {
     let cleanText = newContent;
     if (isHtml) {
       cleanText = cleanText.replace(/<br\s*\/?>/gi, '\n');
@@ -252,10 +254,12 @@ export class GoogleDocsAdapter implements InputAdapter {
 
     // 3. Copy only if direct insertion failed, and confirm the copy before prompting to paste.
     if (cleanText && !insertSuccess) {
-      void this.copySnippetToClipboard(cleanText);
+      this.resetBuffer();
+      return this.copySnippetToClipboard(cleanText);
     }
 
     // 4. Reset the buffer
     this.resetBuffer();
+    return insertSuccess ? 'inserted' : 'failed';
   }
 }

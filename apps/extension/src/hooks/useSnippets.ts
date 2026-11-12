@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Snippet } from '@fillin/shared';
+import { Snippet, TemplateOptions } from '@fillin/shared';
 import { SnippetService } from '../services/SnippetService';
 
 export function useSnippets(service: SnippetService) {
@@ -35,11 +35,12 @@ export function useSnippets(service: SnippetService) {
     trigger: string,
     content: string,
     isHtml: boolean = false,
-    tags?: string[]
+    tags?: string[],
+    template?: TemplateOptions
   ) => {
     try {
       setError(null);
-      await service.createSnippet(trigger, content, isHtml, tags);
+      await service.createSnippet(trigger, content, isHtml, tags, template);
       await loadSnippets();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create snippet');
@@ -52,11 +53,12 @@ export function useSnippets(service: SnippetService) {
     trigger: string,
     content: string,
     isHtml: boolean = false,
-    tags?: string[]
+    tags?: string[],
+    template?: TemplateOptions
   ) => {
     try {
       setError(null);
-      await service.updateSnippet(id, { trigger, content, isHtml, tags });
+      await service.updateSnippet(id, { trigger, content, isHtml, tags, ...template });
       await loadSnippets();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update snippet');

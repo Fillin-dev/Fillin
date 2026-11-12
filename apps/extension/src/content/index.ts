@@ -1,17 +1,31 @@
 import { detectTrigger, Snippet } from '@fillin/shared';
 import { AdapterFactory } from './adapters/AdapterFactory';
 import { GoogleDocsAdapter } from './adapters/GoogleDocsAdapter';
-import { statsService } from '../services/StatsService';
+import { expandSnippet } from './expansion/ExpansionCoordinator';
 import { commandPalette } from './CommandPalette';
 import { validateSnippetLibrary } from '../storage/validateSnippetLibrary';
+import { SuggestionController } from './suggestions/SuggestionController';
+import { SUGGESTIONS_KEY, parseSuggestions } from '../services/SuggestionSettings';
+import { installSelectionGuard } from '../capture/selectionGuard';
+import { cancelTemplateDialog, isTemplateDialogOpen } from './templates/TemplateDialog';
+import { isInlineSessionActive, stopInlineSession } from './templates/InlineSession';
 
-let snippetsCache: Record<string, { content: string; isHtml: boolean }> = {};
+if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) installSelectionGuard();
+
+let snippetsCache: Record<string, Snippet> = {};
 let triggersCache: string[] = [];
 let fullSnippetsCache: Snippet[] = [];
 let blacklistedDomainsCache: string[] = [];
 
+export function isSnippetCurrent(snippet: Snippet): boolean {
+  return fullSnippetsCache.includes(snippet);
+}
+
 export function updateBlacklistCache(domains: string[]) {
+  suggestions?.close();
   blacklistedDomainsCache = (domains || []).map((d) => d.toLowerCase().replace(/^www\./, ''));
+  cancelTemplateDialog();
+  stopInlineSession();
 }
 
 export function isCurrentSiteBlacklisted(): boolean {
@@ -24,6 +38,9 @@ export function isCurrentSiteBlacklisted(): boolean {
 export function updateCache(
   snippets: (Snippet | { trigger: string; content: string; isHtml?: boolean; tags?: string[] })[]
 ) {
+  stopInlineSession();
+  cancelTemplateDialog();
+  suggestions?.close();
   snippetsCache = {};
   triggersCache = [];
   fullSnippetsCache = (snippets || []).map((s, idx) => ({
@@ -32,12 +49,15 @@ export function updateCache(
     content: s.content,
     isHtml: !!s.isHtml,
     tags: (s as Snippet).tags,
+    templateVersion: (s as Snippet).templateVersion,
+    dateFormat: (s as Snippet).dateFormat,
+    editAfterInsert: (s as Snippet).editAfterInsert,
     createdAt: (s as Snippet).createdAt || Date.now(),
     updatedAt: (s as Snippet).updatedAt || Date.now(),
   }));
 
   for (const s of fullSnippetsCache) {
-    snippetsCache[s.trigger] = { content: s.content, isHtml: !!s.isHtml };
+    snippetsCache[s.trigger] = s;
     triggersCache.push(s.trigger);
   }
 
@@ -78,7 +98,19 @@ export function getTargetElement(e?: KeyboardEvent): Element | null {
   return null;
 }
 
+const suggestions = typeof document === 'undefined' ? null : new SuggestionController({
+  snippets: () => fullSnippetsCache,
+  allowed: () => !isCurrentSiteBlacklisted(),
+  target: () => getDeepActiveElement(),
+  paletteOpen: () => commandPalette.isOpen() || isTemplateDialogOpen() || isInlineSessionActive(),
+});
+function applySuggestions(value: unknown) {
+  try { suggestions?.setEnabled(parseSuggestions(value)); }
+  catch { suggestions?.setEnabled(false); }
+}
+
 export function handleKeyDown(e: KeyboardEvent) {
+  if (isTemplateDialogOpen()) return;
   if (isCurrentSiteBlacklisted()) return;
 
   const targetEl = getTargetElement(e);
@@ -88,7 +120,13 @@ export function handleKeyDown(e: KeyboardEvent) {
     ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key.toLowerCase() === 'k' || e.code === 'KeyK')) ||
     ((e.metaKey || e.ctrlKey) && e.key === '/' && !e.shiftKey && !e.altKey);
 
+  if (isInlineSessionActive()) {
+    if (isPaletteShortcut || e.ctrlKey && e.code === 'Space') stopInlineSession();
+    else return;
+  }
+
   if (isPaletteShortcut) {
+    suggestions?.close();
     e.preventDefault();
     e.stopPropagation();
     if (typeof window !== 'undefined' && window.self !== window.top) {
@@ -129,10 +167,7 @@ export function handleKeyDown(e: KeyboardEvent) {
       if (snippet !== undefined) {
         e.preventDefault();
         e.stopPropagation();
-        adapter.replaceText(detection.start, detection.end, snippet.content, snippet.isHtml);
-        void statsService.recordExpansion(detection.trigger.length, snippet.content.length).catch(() => {
-          // Statistics failures must not interrupt text expansion.
-        });
+        void expandSnippet(adapter, snippet, detection.start, detection.end, () => !isCurrentSiteBlacklisted() && !!targetEl?.isConnected && isSnippetCurrent(snippet));
       }
     }
   }
@@ -168,14 +203,20 @@ export function initGoogleDocsObserver() {
 // Initialize only in actual browser environment
 if (typeof document !== 'undefined') {
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.local.get(['fillin_snippets', 'fillin_blacklist'], (result) => {
+    let suggestionRevision = 0;
+    chrome.storage.local.get(['fillin_snippets', 'fillin_blacklist', SUGGESTIONS_KEY], (result) => {
       if (chrome.runtime?.lastError) return;
       updateStoredSnippetCache(result['fillin_snippets']);
       updateBlacklistCache(result['fillin_blacklist'] || []);
+      if (!suggestionRevision) applySuggestions(result[SUGGESTIONS_KEY]);
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') {
+        if (changes[SUGGESTIONS_KEY]) {
+          suggestionRevision++;
+          applySuggestions(changes[SUGGESTIONS_KEY].newValue);
+        }
         if (changes['fillin_snippets']) {
           updateStoredSnippetCache(changes['fillin_snippets'].newValue);
         }
@@ -190,17 +231,23 @@ if (typeof document !== 'undefined') {
       updateStoredSnippetCache(data === null ? undefined : JSON.parse(data));
       const bData = localStorage.getItem('fillin_blacklist');
       if (bData) updateBlacklistCache(JSON.parse(bData));
+      const settings = localStorage.getItem(SUGGESTIONS_KEY);
+      applySuggestions(settings === null ? undefined : JSON.parse(settings));
     } catch {
       updateCache([]);
     }
   }
 
   document.addEventListener('keydown', handleKeyDown, true);
+  document.addEventListener('fillin-template-open', () => { stopInlineSession(); suggestions?.close(); if (commandPalette.isOpen()) commandPalette.close(); });
+  document.addEventListener('fillin-inline-open', () => { suggestions?.close(); if (commandPalette.isOpen()) commandPalette.close(); });
   initGoogleDocsObserver();
 
   if (typeof window !== 'undefined') {
     window.addEventListener('message', (event) => {
       if (event.data?.type === 'FILLIN_OPEN_PALETTE') {
+        if (isTemplateDialogOpen()) return;
+        suggestions?.close();
         const activeTarget = getTargetElement() || document.activeElement;
         commandPalette.open(activeTarget);
       }

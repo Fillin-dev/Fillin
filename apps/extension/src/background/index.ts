@@ -1,5 +1,7 @@
 import { StatsService } from '../services/StatsService';
 import { BlacklistService } from '../services/BlacklistService';
+import { SuggestionSettings } from '../services/SuggestionSettings';
+import { installCaptureMenu } from '../capture/contextMenu';
 import {
   isStorageUpdateRequest,
   StorageUpdateResponse,
@@ -7,6 +9,8 @@ import {
 
 const stats = new StatsService(true);
 const blacklist = new BlacklistService(true);
+const suggestions = new SuggestionSettings(true);
+installCaptureMenu();
 
 chrome.runtime.onMessage.addListener(
   (message: unknown, sender, sendResponse) => {
@@ -27,6 +31,8 @@ chrome.runtime.onMessage.addListener(
 
     const update = async (): Promise<unknown> => {
       switch (message.operation) {
+        case 'setSuggestions':
+          return suggestions.set(message.enabled);
         case 'recordExpansion':
           return stats.recordExpansion(
             message.triggerLength,

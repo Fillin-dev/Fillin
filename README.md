@@ -32,6 +32,9 @@ Whether you're typing your email (`/email`), a canned customer support response 
 ##  Key Features
 
 -  **Instant Snippet Expansion**: Type your snippet trigger (e.g. `/email`) and hit `Ctrl + Space` to expand it inline.
+-  **Fill-In Templates (0.1.0)**: Enable **Use template values** for a plain-text snippet such as `Hi {{name}}, thanks for contacting {{company}}.` Expanding asks for each field once, previews the finished message, and inserts it after confirmation. Answers are not saved. Repeated names share one value; `{{date}}`, `{{time}}`, and `{{datetime}}` remain automatic. See [template usage and limits](docs/development/template-fields.md).
+-  **Cursor Placement (0.1.0)**: Add one `{{cursor}}` to an enabled plain-text template to choose where typing resumes, including before a signature or newline. Supported native fields and rich-text positions place the cursor after insertion; unsupported editors explain the limitation and offer clean copying. See [cursor placement](docs/development/cursor-placement.md).
+-  **Editable Placeholders (0.1.0)**: Enable **Edit fields after insertion** on a template to replace selected `‹name›` labels directly in supported text boxes. Tab/Shift+Tab move between independent occurrences; the last Tab finishes at the cursor marker or snippet end. Escape stops navigation while keeping edits. Other editors retain the fill-in dialog. See [inline editing and undo support](docs/development/inline-placeholders.md).
 -  **In-Page Command Palette**: Press `Ctrl + Shift + K` (or `Cmd + Shift + K` / `Cmd + /`) to summon a Raycast-style floating palette over any webpage, search across your entire snippet library, and insert with `Enter`.
 -  **Local Gamification (Keystrokes & Time Saved)**: Real-time counter displayed in the popup tracking total keystrokes and minutes saved—calculated and stored 100% locally.
 -  **Tags & Category Organization**: Categorize snippets with `#tags` (e.g., `#email`, `#work`, `#dev`) and filter your library with 1 click.
@@ -45,7 +48,7 @@ Whether you're typing your email (`/email`), a canned customer support response 
   - **Restricted Inputs**: Automatically handles cursor position calculation for HTML5 input types (`search`, `url`, `tel`).
 -  **Site Blacklist & 1-Click Pause Mode**: Instantly disable Fillin on sensitive websites (banking portals, internal tools, code sandboxes) with a single click in the popup, or manage custom blacklisted domains with automatic subdomain matching (`secure.chase.com` matches `chase.com`).
 -  **Snippet Duplicate Warning & Conflict Resolution**: Real-time visual conflict detection in the snippet editor that prevents exact duplicate triggers and warns on prefix overlaps (e.g., `/e` vs `/email`), providing clean clickable suggestions (`/email2`, `/myemail`).
--  **Zero Data Collection**: Operates strictly on `chrome.storage.local`. No typing data or keystrokes ever leave your browser.
+-  **Zero Data Collection**: Saved snippets stay in `chrome.storage.local`; pending selections use temporary `chrome.storage.session` drafts. Fillin sends no typing data or keystrokes to a backend.
 -  **Minimal Popup UI**: Sleek, modern monochromatic extension popup to create, edit, search, and manage shortcuts effortlessly.
 -  **Decoupled Monorepo Architecture**: Clean separation between the core shared engine, the extension, and the marketing landing app.
 
@@ -243,7 +246,8 @@ After a production build, run `corepack pnpm --filter @fillin/landing-frontend t
 Fillin is built on a strict **privacy-first design**:
 
 - **Zero Remote Analytics**: Keystroke detection and expansion occur entirely inside your browser tab's content script sandbox.
-- **Chrome Permissions**: `"storage"` saves snippets, settings, and statistics locally. `"clipboardWrite"` supports the Google Docs clipboard fallback. The content script runs on matching websites (`<all_urls>`, including frames) to expand text. No `"tabs"`, `"cookies"`, or `"webRequest"` permissions are requested.
+- **Chrome Permissions**: `"storage"` saves snippets, settings, and statistics locally, and holds temporary selection drafts in session storage. `"clipboardWrite"` supports the Google Docs clipboard fallback. `"contextMenus"` adds **Save selection to Fillin** to the right-click menu. The content script runs on matching websites (`<all_urls>`, including frames) to expand text and verify selections. No `"tabs"`, `"cookies"`, `"clipboardRead"`, or `"webRequest"` permissions are requested.
+- **Save selection to Fillin**: Select text on an ordinary webpage, right-click, and choose **Save selection to Fillin**. A separate editor suggests a shortcut and fills in the selected text; tags are optional. Nothing is added until you save. Password/protected fields and blocked sites are excluded. Drafts are limited to 100,000 characters and five open editors, expire after ten minutes, and are cleared on save, discard, or window close. Browser restarts clear session drafts. Newly captured HTML-like text and template markers remain literal unless you explicitly change their editor options. Reload the unpacked extension and existing webpage tabs to try this local implementation; a release may prompt for the new menu permission.
 - **Decoupled Architecture**: The extension codebase makes zero HTTP/REST calls to any backend server.
 
 ---
